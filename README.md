@@ -44,11 +44,3 @@
 <p align="center">Trello / Jira</p>
 
 <hr>
-
-<h2 align="center">Niveles de Entrega</h2>
-
-<h3 align="center">Nivel Esencial:</h3>
-
-<ul align="center">
-  <li>Un programa CLI que al iniciarse dé la bienvenida, explique su funcionamiento y se quede a la espera de instrucciones</li>
-  <li>Cuando se le dé la orden de empezar, el programa debe empezar a calcular la tarifa contando con que el
