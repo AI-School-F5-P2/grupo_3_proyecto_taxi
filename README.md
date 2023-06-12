@@ -1,7 +1,7 @@
 <h1 align="center">PROYECTO PYTHON: TAXI</h1>
 
 <p align="center">
-  <img src="taxi_image.png" alt="Taxi Image" width="300" height="200">
+  <img src="https://www.teleadhesivo.com/es/img/asfs1646-jpg/folder/products-listado-merchanthover/pegatinas-coches-motos-fake-taxi-ii.jpg" alt="Taxi Image" width="300" height="200">
 </p>
 
 <p align="center">Este repositorio contiene el código fuente y la documentación para el desarrollo de un programa en Python que calcula las tarifas de un servicio de taxis.</p>
