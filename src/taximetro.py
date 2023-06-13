@@ -1,8 +1,10 @@
 # import libraries
 import time
-import tkinter as tk
 import requests
 from datetime import datetime
+import tkinter as tk # importar tkinter
+from PIL import ImageTk, Image # importar imagenes
+from logs import logs # importar logs
 
 # create class
 class Taximetro:
@@ -33,6 +35,7 @@ class Taximetro:
             self.tiempoInicio = time.time()
             # print("coche en movimiento")
             result_label.config(text="Coche en movimiento", font=("Arial", 12, "bold"),justify="center")
+            result_label_info.config(text=f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"),justify="center")
         elif not self.taximetroActivo:
             # print("Antes de poner a mover el coche debes inicializar el taximetro -> iniciar")
             result_label.config(text="Antes de poner a mover el coche debes inicializar el taximetro -> iniciar", font=("Arial", 12, "bold"),justify="center")
@@ -151,30 +154,25 @@ class Taximetro:
 
 def iniciar_carrera():
     contrasena = entry_contrasena.get()
+    logs()
     if contrasena == "1234":
-
-        # delete widgets
+        # Ocultar widgets de inicio de sesión
         label_contrasena.pack_forget()
         button_iniciar.pack_forget()
         entry_contrasena.pack_forget()
-        
-        # create button for the next window
-        button_mover = tk.Button(window, text="Mover Coche", command=mover_coche)
-        button_mover.pack()
-        button_detener = tk.Button(window, text="Detener Coche", command=detener_coche)
-        button_detener.pack()
-        button_finalizar = tk.Button(window, text="Finalizar Recorrido", command=finalizar_recorrido)
-        button_finalizar.pack()
-        # button close
-        button_close = tk.Button(window, text="Cerrar", command=taximetro.finalizar_windows)
+        message_widget.pack_forget()
+        # Mostrar botones de la carrera
+        button_init.pack(pady=10, ipady=10, ipadx=100)
+        button_mover.pack(pady=10, ipady=10, ipadx=100)
+        button_detener.pack(pady=10, ipady=10, ipadx=100)
+        button_finalizar.pack(pady=10, ipady=10, ipadx=90)
         button_close.pack()
 
-        
         taximetro.iniciar()
-
     else:
-        label_contrasena.config(text="Contraseña Incorrecta", font=("Arial", 12, "bold"),justify="center")
+        label_contrasena.config(text="Contraseña Incorrecta", font=("Arial", 12, "bold"), justify="center")
         label_contrasena.pack(pady=10, ipady=10, ipadx=100)
+
 def mover_coche():
     taximetro.moverCoche()
 
@@ -188,9 +186,15 @@ taximetro = Taximetro()
 
 # create main loop
 window = tk.Tk()
-window.title("Taxímetro")
-window.geometry("1080x720")
 
+window.title("Taxímetro")
+window.geometry("720x480")
+
+button_init = tk.Button(window, text="Iniciar Carrera", command=iniciar_carrera)
+button_mover = tk.Button(window, text="Mover Coche", command=mover_coche)
+button_detener = tk.Button(window, text="Detener Coche", command=detener_coche)
+button_finalizar = tk.Button(window, text="Finalizar Recorrido", command=finalizar_recorrido)
+button_close = tk.Button(window, text="Cerrar", command=taximetro.finalizar_windows)
 
 # create widgets
 label_contrasena = tk.Label(window, text="Por favor, ingrese la contraseña:", font=("Arial", 12, "bold"),justify="center")
@@ -211,6 +215,24 @@ entry_contrasena.configure(
 # call the mainloop
 button_iniciar = tk.Button(window, text="Iniciar Carrera", command=iniciar_carrera)
 button_iniciar.pack(padx=10, pady=10, ipady=10, ipadx=100)
+
+
+
+# create image
+imagen = Image.open("assets/taxi.png") 
+imagen_tk = ImageTk.PhotoImage(imagen)
+label = tk.Label(window, image=imagen_tk)
+label.pack()
+# Resto del código...
+
+# create text area
+message_widget = tk.Message(window, text="\tBienvenido al Taxímetro:\n\nPara iniciar el taxi, presiona 'Iniciar '.\nPara mover el taxi, presiona 'Mover '.\nPara detener el taxi, presiona 'Detener '.\nPara finalizar el taxi, presiona 'Finalizar'.", width=400)
+message_widget.configure(
+    font=("Arial", 13),  # Tamaño y fuente del texto
+    borderwidth=1,  # Ancho del borde en píxeles
+    # Alineación del texto (centrado)
+)
+message_widget.pack(pady=10)  # Agregar un espacio de relleno vertical
 
 # label show the result
 result_label = tk.Label(window, text="")
