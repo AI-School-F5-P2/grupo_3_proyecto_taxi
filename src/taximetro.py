@@ -16,6 +16,7 @@ class Taximetro:
         self.tarifaTotal = 0
         self.tarifa = 0
         self.yaSeAfrenado=False
+        self.historialData=[]
 
 # create methods
     def iniciar(self):
@@ -108,7 +109,7 @@ class Taximetro:
     def extraerHistorial(self):
         api_url = "http://127.0.0.1:4000/historial"
         response = requests.get(api_url + api_url)
-        historial_data = response.json()
+        self.historialData = response.json()
         print("Historial:", historial_data)
         return
 
@@ -219,7 +220,7 @@ button_iniciar.pack(padx=10, pady=10, ipady=10, ipadx=100)
 
 
 # create image
-imagen = Image.open("assets/taxi.png") 
+imagen = Image.open("../assets/taxi.png") 
 imagen_tk = ImageTk.PhotoImage(imagen)
 label = tk.Label(window, image=imagen_tk)
 label.pack()

@@ -2,7 +2,7 @@ import logging
 
 
 def logs():
-    logging.basicConfig(filename='logs/archivo.log', level=logging.DEBUG, 
+    logging.basicConfig(filename='../logs/archivo.log', level=logging.DEBUG, 
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
     # registros
