@@ -127,7 +127,6 @@ class Taximetro:
 def iniciar_carrera():
     contrasena = entry_contrasena.get()
     if contrasena == "1234":
-
         # delete widgets
         label_contrasena.pack_forget()
         button_iniciar.pack_forget()
@@ -135,11 +134,11 @@ def iniciar_carrera():
         
         # create button for the next window
         button_mover = tk.Button(window, text="Mover Coche", command=mover_coche)
-        button_mover.pack()
+        button_mover.pack( pady=10, ipady=10, ipadx=100 )
         button_detener = tk.Button(window, text="Detener Coche", command=detener_coche)
-        button_detener.pack()
+        button_detener.pack( pady=10, ipady=10, ipadx=100 )
         button_finalizar = tk.Button(window, text="Finalizar Recorrido", command=finalizar_recorrido)
-        button_finalizar.pack()
+        button_finalizar.pack( pady=10, ipady=10, ipadx=90 )
         # button close
         button_close = tk.Button(window, text="Cerrar", command=taximetro.finalizar_windows)
         button_close.pack()
@@ -164,7 +163,7 @@ taximetro = Taximetro()
 # create main loop
 window = tk.Tk()
 window.title("Taxímetro")
-window.geometry("1080x720")
+window.geometry("720x480")
 
 
 # create widgets
@@ -182,6 +181,7 @@ entry_contrasena.configure(
     width=20,
     justify="center",
 )
+
 
 # call the mainloop
 button_iniciar = tk.Button(window, text="Iniciar Carrera", command=iniciar_carrera)
