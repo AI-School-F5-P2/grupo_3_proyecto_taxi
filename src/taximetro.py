@@ -79,8 +79,6 @@ class Taximetro:
             self.tiempoTrancurrido = time.time() - self.tiempoInicio
             self.tarifa = self.tiempoTrancurrido * 0.02
             self.tarifaTotal += self.tarifa
-            print(f"Tiempo transcurrido desde que se detuvo el taxi {self.tiempoTrancurrido}")
-            print(f"Tarifa de ese tiempo transcurrido {self.tarifa}")
             print(f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.")
         if accion == "moviendose":
             self.tiempoTrancurrido = time.time() - self.tiempoInicio
