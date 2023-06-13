@@ -1,10 +1,13 @@
 # import libraries
+from flask import Flask
 import time
 import requests
 from datetime import datetime
 import tkinter as tk # importar tkinter
 from PIL import ImageTk, Image # importar imagenes
 from logs import logs # importar logs
+from database import Database
+
 
 # create class
 class Taximetro:
@@ -16,9 +19,11 @@ class Taximetro:
         self.tarifaTotal = 0
         self.tarifa = 0
         self.yaSeAfrenado=False
-        self.historialData=[]
+        
+        
 
-# create methods
+
+    # create methods
     def iniciar(self):
         if not self.taximetroActivo:
             result_label.config(text="Taximetro inicializado", font=("Arial", 12, "bold"),justify="center")
@@ -27,6 +32,9 @@ class Taximetro:
         else:
             result_label.config(text="El taximetro ya se a iniciado", font=("Arial", 12, "bold"),justify="center")
         
+        
+        
+        
     def moverCoche(self):
         if self.taximetroActivo and not self.cocheEnMovimiento:
             if self.yaSeAfrenado:
@@ -34,9 +42,7 @@ class Taximetro:
                 
             self.cocheEnMovimiento = True
             self.tiempoInicio = time.time()
-            # print("coche en movimiento")
             result_label.config(text="Coche en movimiento", font=("Arial", 12, "bold"),justify="center")
-            result_label_info.config(text=f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"),justify="center")
         elif not self.taximetroActivo:
             # print("Antes de poner a mover el coche debes inicializar el taximetro -> iniciar")
             result_label.config(text="Antes de poner a mover el coche debes inicializar el taximetro -> iniciar", font=("Arial", 12, "bold"),justify="center")
@@ -44,27 +50,28 @@ class Taximetro:
             # print("El Coche ya esta en movimiento")
             result_label.config(text="El Coche ya esta en movimiento", font=("Arial", 12, "bold"),justify="center")
 
+
+
+
     def detenerCoche(self):
         if self.cocheEnMovimiento:
             self.cocheEnMovimiento = False
-            self.calcularTarifa("moviendose")
-            # print(f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.")
-            result_label.config(text="El Coche se ha detenido", font=("Arial", 12, "bold"),justify="center")
-            result_label_info.config(text=f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"),justify="center")
             self.yaSeAfrenado = True
+            self.calcularTarifa("moviendose")
+            result_label.config(text="El Coche se ha detenido", font=("Arial", 12, "bold"),justify="center")
             self.tiempoInicio = time.time()
         else:
-            # print("El coche ya esta denetido")
+            #print("El coche ya esta detenido")
             result_label.config(text="El coche ya esta denetido", font=("Arial", 12, "bold"),justify="center")
+              
+              
+              
               
     def finalizarRecorrido(self):
         if self.cocheEnMovimiento == False and self.taximetroActivo:
-            # print("carrera terminada")
             result_label.config(text="Carrera terminada", font=("Arial", 12, "bold"),justify="center")
-            self.tiempoTrancurrido = time.time() - self.tiempoInicio
-            self.tarifa = self.tiempoTrancurrido * 0.02
-            self.tarifaTotal += self.tarifa
-            # print(f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.")
+            self.calcularTarifa("detenido")
+            self.agegrarABaseDeDatos()
             result_label_info.config(text=f"Total a pagar:  {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"),justify="center")
             #reinicio todos los valores
             self.taximetroActivo=False
@@ -74,9 +81,7 @@ class Taximetro:
             self.tarifaTotal = 0
             self.tarifa = 0
             self.yaSeAfrenado=False
-            self.agegrarABaseDeDatos()
-            
-            
+
         elif not self.taximetroActivo:
             # print("No hay carrera en curso")
             result_label.config(text="No hay carrera en curso", font=("Arial", 12, "bold"),justify="center")
@@ -84,48 +89,56 @@ class Taximetro:
             # print("Para finalizar el recorrido primero debes detener el coche -> detener")
             result_label.config(text="Para finalizar el recorrido primero debes detener el coche -> detener", font=("Arial", 12, "bold"),justify="center")
     
+    
+    
+    
     # create method to close the window
     def finalizar_windows(self):
         window.destroy()
         
 
-# create method to calculate the rate
+
+
+    #create method to calculate the rate
     def calcularTarifa(self,accion):
+        monto:float
         if accion == "detenido":
-            self.tiempoTrancurrido = time.time() - self.tiempoInicio
-            self.tarifa = self.tiempoTrancurrido * 0.02
-            self.tarifaTotal += self.tarifa
-            # print(f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.")
-            result_label_info.config(text=f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"),justify="center")
-        if accion == "moviendose":
-            self.tiempoTrancurrido = time.time() - self.tiempoInicio
-            self.tarifa = self.tiempoTrancurrido * 0.05
-            self.tarifaTotal += self.tarifa
-            # print(f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.")
-            result_label_info.config(text=f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"),justify="center")
+            monto = 0.02
+        elif accion == "moviendose":
+            monto = 0.05
+        
+        self.tiempoTrancurrido = time.time() - self.tiempoInicio
+        self.tarifa = int(self.tiempoTrancurrido) * monto
+        self.tarifaTotal += self.tarifa
+        result_label_info.config(text=f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"),justify="center")
+
+
 
 
     #extraer historial
     def extraerHistorial(self):
-        api_url = "http://127.0.0.1:4000/historial"
-        response = requests.get(api_url + api_url)
-        self.historialData = response.json()
-        print("Historial:", historial_data)
-        return
+        database = Database()
+        historial = database.all()
+        return historial
 
-    #agregar a la base de datos
+
+
+    # agregar a la base de datos
     def agegrarABaseDeDatos(self):
         fecha_actual = datetime.now()
         fecha_hora_actual_str = fecha_actual.strftime('%Y-%m-%d %H:%M:%S')
-        api_url = "http://127.0.0.1:4000/agregar" 
+        database = Database()
         data = {
-            'tarifa': 10,
-            'fecha': str(fecha_hora_actual_str)
+            "tarifa":str(self.tarifaTotal),
+            "fecha": str(fecha_hora_actual_str)
         }
-        
-        response = requests.post(api_url, data=data)
-        response_data = response.json()
-        print("Respuesta:", response_data)
+        database.insertar(data)
+        print("Se agrego a la base de datos")
+        return 
+
+
+
+
 
 
 
@@ -246,3 +259,6 @@ result_label_count = tk.Label(window, text="")
 result_label_count.pack()
 
 window.mainloop()
+
+
+
