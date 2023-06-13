@@ -13,7 +13,7 @@ class Database:
         return self.conexion
     
     
-    # EXTRAER HISTORIAL COMPLETO
+    # EXTRAER HISTORIAL COMPLETO 
     def all(self):
         conexion = self.conector()
         cursor = conexion.cursor()
