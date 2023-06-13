@@ -1,6 +1,8 @@
 # import libraries
 import time
 import tkinter as tk
+import requests
+from datetime import datetime
 
 # create class
 class Taximetro:
@@ -68,6 +70,8 @@ class Taximetro:
             self.tarifaTotal = 0
             self.tarifa = 0
             self.yaSeAfrenado=False
+            self.agegrarABaseDeDatos()
+            
             
         elif not self.taximetroActivo:
             # print("No hay carrera en curso")
@@ -87,8 +91,6 @@ class Taximetro:
             self.tiempoTrancurrido = time.time() - self.tiempoInicio
             self.tarifa = self.tiempoTrancurrido * 0.02
             self.tarifaTotal += self.tarifa
-            # print(f"Tiempo transcurrido desde que se detuvo el taxi {self.tiempoTrancurrido}")
-            # print(f"Tarifa de ese tiempo transcurrido {self.tarifa}")
             # print(f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.")
             result_label_info.config(text=f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"),justify="center")
         if accion == "moviendose":
@@ -97,6 +99,29 @@ class Taximetro:
             self.tarifaTotal += self.tarifa
             # print(f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.")
             result_label_info.config(text=f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"),justify="center")
+
+
+    #extraer historial
+    def extraerHistorial(self):
+        api_url = "http://127.0.0.1:4000/historial"
+        response = requests.get(api_url + api_url)
+        historial_data = response.json()
+        print("Historial:", historial_data)
+        return
+
+    #agregar a la base de datos
+    def agegrarABaseDeDatos(self):
+        fecha_actual = datetime.now()
+        fecha_hora_actual_str = fecha_actual.strftime('%Y-%m-%d %H:%M:%S')
+        api_url = "http://127.0.0.1:4000/agregar" 
+        data = {
+            'tarifa': 10,
+            'fecha': str(fecha_hora_actual_str)
+        }
+        
+        response = requests.post(api_url, data=data)
+        response_data = response.json()
+        print("Respuesta:", response_data)
 
 
 

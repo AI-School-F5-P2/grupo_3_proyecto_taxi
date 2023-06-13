@@ -11,30 +11,47 @@ conexion = mysql.connector.connect(
     database="taxi_database"
 )
 
+cursor = conexion.cursor()
 
 
+#historial
 @app.route("/historial")
-def getHistorial():
-    return
+def getAllData():
+    # Ejecutar consultas o comandos SQL
+    cursor.execute("SELECT * FROM  `historial-carreras`")
+    filas = cursor.fetchall()
+    
+    # Recorrer los resultados
+
+    historial = []
+    for fila in filas:
+        data = {
+            "tarifa":fila[0],
+            "fecha":fila[1],
+        }
+        historial.append(data)
+    return jsonify(historial)
 
 
-@app.route("/agregar", methods="POST")
+
+
+
+@app.route("/agregar", methods=["POST"])
 def agregar():
-    cursor = conexion.cursor()
-    # data = request.json
     tarifa = request.form.get('tarifa')
     fecha = request.form.get('fecha')
-    sql= "INSERT INTO `historial-carreras` (tarifa, fecha) VALUES ('%s', '%s')"
-    valores = (tarifa, fecha)
-    cursor.execute(sql,valores)
+    sql = f"INSERT INTO `historial-carreras` (tarifa, fecha) VALUES ('{tarifa}','{fecha}')"
+    cursor.execute(sql)
     conexion.commit()
-    cursor.close()
-    conexion.close()
-    print(valores)
-    return
+    return jsonify({'message':'tarifa agregada a la base de datos'})
 
 
 
 
-if __name__== '__main__':
-    app(debug=True)
+
+
+
+
+if __name__ == '__main__':
+    app.run(debug=True, port=4000)
+    
