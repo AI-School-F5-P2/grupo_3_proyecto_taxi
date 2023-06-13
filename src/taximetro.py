@@ -1,7 +1,8 @@
 # import libraries
 import time
-import tkinter as tk
-from PIL import ImageTk, Image
+import tkinter as tk # importar tkinter
+from PIL import ImageTk, Image # importar imagenes
+from logs import logs # importar logs
 
 # create class
 class Taximetro:
@@ -32,6 +33,7 @@ class Taximetro:
             self.tiempoInicio = time.time()
             # print("coche en movimiento")
             result_label.config(text="Coche en movimiento", font=("Arial", 12, "bold"),justify="center")
+            result_label_info.config(text=f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"),justify="center")
         elif not self.taximetroActivo:
             # print("Antes de poner a mover el coche debes inicializar el taximetro -> iniciar")
             result_label.config(text="Antes de poner a mover el coche debes inicializar el taximetro -> iniciar", font=("Arial", 12, "bold"),justify="center")
@@ -99,40 +101,15 @@ class Taximetro:
             # print(f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.")
             result_label_info.config(text=f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"),justify="center")
 
-
-
-# create method to run the program       
-    # def correr(self):
-    #         print("Para iniciar la carrera, ingresa 'iniciar'")
-    #         print("Para mover el taxi, ingresa 'mover'")
-    #         print("Para detener el taxi, ingresa 'detener'")
-    #         print("Para finalizar la carrera, ingresa 'fin'")
-    #         print("Para salir del programa, ingresa 'salir'")
-    #         instruccion = input("Ingrese una instrucción: ")
-
-    #         if instruccion == "iniciar":
-    #             self.iniciar()
-    #         if instruccion == "mover":
-    #             self.moverCoche()
-    #         elif instruccion == "detener":
-    #             self.detenerCoche()
-    #         elif instruccion == "fin":
-    #             self.finalizarRecorrido()
-    #         elif instruccion == "salir":
-    #             return
-    #         else:
-    #             print("Contraseña Incorrecta")
-
-
-
 def iniciar_carrera():
     contrasena = entry_contrasena.get()
+    logs()
     if contrasena == "1234":
         # Ocultar widgets de inicio de sesión
         label_contrasena.pack_forget()
         button_iniciar.pack_forget()
         entry_contrasena.pack_forget()
-
+        message_widget.pack_forget()
         # Mostrar botones de la carrera
         button_init.pack(pady=10, ipady=10, ipadx=100)
         button_mover.pack(pady=10, ipady=10, ipadx=100)
@@ -144,8 +121,6 @@ def iniciar_carrera():
     else:
         label_contrasena.config(text="Contraseña Incorrecta", font=("Arial", 12, "bold"), justify="center")
         label_contrasena.pack(pady=10, ipady=10, ipadx=100)
-
-
 
 def mover_coche():
     taximetro.moverCoche()
@@ -160,18 +135,15 @@ taximetro = Taximetro()
 
 # create main loop
 window = tk.Tk()
+
 window.title("Taxímetro")
 window.geometry("720x480")
-
-
 
 button_init = tk.Button(window, text="Iniciar Carrera", command=iniciar_carrera)
 button_mover = tk.Button(window, text="Mover Coche", command=mover_coche)
 button_detener = tk.Button(window, text="Detener Coche", command=detener_coche)
 button_finalizar = tk.Button(window, text="Finalizar Recorrido", command=finalizar_recorrido)
 button_close = tk.Button(window, text="Cerrar", command=taximetro.finalizar_windows)
-
-
 
 # create widgets
 label_contrasena = tk.Label(window, text="Por favor, ingrese la contraseña:", font=("Arial", 12, "bold"),justify="center")
@@ -200,6 +172,16 @@ imagen = Image.open("assets/taxi.png")
 imagen_tk = ImageTk.PhotoImage(imagen)
 label = tk.Label(window, image=imagen_tk)
 label.pack()
+# Resto del código...
+
+# create text area
+message_widget = tk.Message(window, text="\tBienvenido al Taxímetro:\n\nPara iniciar el taxi, presiona 'Iniciar '.\nPara mover el taxi, presiona 'Mover '.\nPara detener el taxi, presiona 'Detener '.\nPara finalizar el taxi, presiona 'Finalizar'.", width=400)
+message_widget.configure(
+    font=("Arial", 13),  # Tamaño y fuente del texto
+    borderwidth=1,  # Ancho del borde en píxeles
+    # Alineación del texto (centrado)
+)
+message_widget.pack(pady=10)  # Agregar un espacio de relleno vertical
 
 # label show the result
 result_label = tk.Label(window, text="")
