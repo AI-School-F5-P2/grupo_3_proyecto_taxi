@@ -1,6 +1,7 @@
 # import libraries
 import time
 import tkinter as tk
+from PIL import ImageTk, Image
 
 # create class
 class Taximetro:
@@ -127,28 +128,25 @@ class Taximetro:
 def iniciar_carrera():
     contrasena = entry_contrasena.get()
     if contrasena == "1234":
-        # delete widgets
+        # Ocultar widgets de inicio de sesión
         label_contrasena.pack_forget()
         button_iniciar.pack_forget()
         entry_contrasena.pack_forget()
-        
-        # create button for the next window
-        button_mover = tk.Button(window, text="Mover Coche", command=mover_coche)
-        button_mover.pack( pady=10, ipady=10, ipadx=100 )
-        button_detener = tk.Button(window, text="Detener Coche", command=detener_coche)
-        button_detener.pack( pady=10, ipady=10, ipadx=100 )
-        button_finalizar = tk.Button(window, text="Finalizar Recorrido", command=finalizar_recorrido)
-        button_finalizar.pack( pady=10, ipady=10, ipadx=90 )
-        # button close
-        button_close = tk.Button(window, text="Cerrar", command=taximetro.finalizar_windows)
+
+        # Mostrar botones de la carrera
+        button_init.pack(pady=10, ipady=10, ipadx=100)
+        button_mover.pack(pady=10, ipady=10, ipadx=100)
+        button_detener.pack(pady=10, ipady=10, ipadx=100)
+        button_finalizar.pack(pady=10, ipady=10, ipadx=90)
         button_close.pack()
 
-        
         taximetro.iniciar()
-
     else:
-        label_contrasena.config(text="Contraseña Incorrecta", font=("Arial", 12, "bold"),justify="center")
+        label_contrasena.config(text="Contraseña Incorrecta", font=("Arial", 12, "bold"), justify="center")
         label_contrasena.pack(pady=10, ipady=10, ipadx=100)
+
+
+
 def mover_coche():
     taximetro.moverCoche()
 
@@ -164,6 +162,15 @@ taximetro = Taximetro()
 window = tk.Tk()
 window.title("Taxímetro")
 window.geometry("720x480")
+
+
+
+button_init = tk.Button(window, text="Iniciar Carrera", command=iniciar_carrera)
+button_mover = tk.Button(window, text="Mover Coche", command=mover_coche)
+button_detener = tk.Button(window, text="Detener Coche", command=detener_coche)
+button_finalizar = tk.Button(window, text="Finalizar Recorrido", command=finalizar_recorrido)
+button_close = tk.Button(window, text="Cerrar", command=taximetro.finalizar_windows)
+
 
 
 # create widgets
@@ -182,10 +189,17 @@ entry_contrasena.configure(
     justify="center",
 )
 
-
 # call the mainloop
 button_iniciar = tk.Button(window, text="Iniciar Carrera", command=iniciar_carrera)
 button_iniciar.pack(padx=10, pady=10, ipady=10, ipadx=100)
+
+
+
+# create image
+imagen = Image.open("assets/taxi.png") 
+imagen_tk = ImageTk.PhotoImage(imagen)
+label = tk.Label(window, image=imagen_tk)
+label.pack()
 
 # label show the result
 result_label = tk.Label(window, text="")
