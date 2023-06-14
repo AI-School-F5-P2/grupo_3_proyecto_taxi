@@ -1,1 +1,2 @@
-# tkinter==23.1.2
+ tkinter==8.6
+ mypy==0.0.3
