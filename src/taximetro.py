@@ -7,6 +7,7 @@ import tkinter as tk # importar tkinter
 from PIL import ImageTk, Image # importar imagenes
 from logs import logs # importar logs
 from database import Database
+import os
 
 
 # create class
@@ -139,6 +140,11 @@ class Taximetro:
         database.insertar(data)
         print("Se agrego a la base de datos")
         return 
+    
+    #guardar en un archivo .txt
+    
+        
+        # archivo_txt.close()
 
 
 # create method to run the program       
@@ -259,4 +265,6 @@ result_label_count.pack()
 window.mainloop()
 
 
+taximetro = Taximetro()
+textoPlano = taximetro.guardarEnHistorial()
 

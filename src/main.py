@@ -4,6 +4,7 @@ from taximetro import Taximetro
 def main():
     taxi = Taximetro()
     taxi.correr() 
+
   
 # taxi.iniciar()
 if __name__ == '__main__':

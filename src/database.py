@@ -1,4 +1,5 @@
 import mysql.connector
+import os
 
 class Database:
     #CONEXION A BASE DE DATOS
@@ -22,6 +23,7 @@ class Database:
         historial = []
         for element in fila:
             data = {
+                "id":element[0],
                 "tarifa":element[1],
                 "fecha":element[2]
             }
@@ -39,14 +41,27 @@ class Database:
         
 
     
-    
- 
-# db = Database()
-# historial = db.all()
-# print(historial)
-    
+     #guardar en un archivo .txt
+    def guardarEnHistorial(self):
+        # Nombre de la carpeta y archivo
+        carpeta = "historial"
+        archivo = "historial.txt"
 
+        # Comprobar si la carpeta existe, si no, crearla
+        if not os.path.exists(carpeta):
+            os.makedirs(carpeta)
 
-    
-    
+        # Ruta completa del archivo
+        ruta_archivo = os.path.join(carpeta, archivo)
+
+        # Abrir archivo de texto para escritura
+        archivo_txt = open(ruta_archivo, "w")   
+                    
+        db = Database()
+        historial = db.all()
+        # archivo_txt = open("datos.txt", "w")
+        for data in historial:
+            texto = f"ID: {data['id']} TARIFA: {data['tarifa']} FECHA: {data['fecha']} \n"
+            archivo_txt.write(texto)
+        archivo_txt.close()
     
