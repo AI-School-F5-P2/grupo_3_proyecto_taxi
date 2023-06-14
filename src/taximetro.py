@@ -25,7 +25,10 @@ class Taximetro:
 
     # create methods
     def iniciar(self):
+        result_label_info.config(text=f"")
         if not self.taximetroActivo:
+            if self.tarifaTotal > 0:
+                self.tarifaTotal = 0
             result_label.config(text="Taximetro inicializado", font=("Arial", 12, "bold"),justify="center")
             self.taximetroActivo = True
             self.tiempoInicio = time.time()
@@ -69,10 +72,11 @@ class Taximetro:
               
     def finalizarRecorrido(self):
         if self.cocheEnMovimiento == False and self.taximetroActivo:
-            result_label.config(text="Carrera terminada", font=("Arial", 12, "bold"),justify="center")
+            result_label.config(text="Carrera terminada\n para inicar otra carrera da click en 'iniciar carrera'", font=("Arial", 12, "bold"),justify="center")
             self.calcularTarifa("detenido")
             self.agegrarABaseDeDatos()
             result_label_info.config(text=f"Total a pagar:  {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"),justify="center")
+            # button_init.pack(pady=10, ipady=10, ipadx=100)
             #reinicio todos los valores
             self.taximetroActivo=False
             self.cocheEnMovimiento= False
@@ -158,7 +162,6 @@ class Taximetro:
     #             return
     #         else:
     #             print("Contraseña Incorrecta")
-
 
 
 def iniciar_carrera():
