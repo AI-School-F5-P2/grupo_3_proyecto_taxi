@@ -249,15 +249,8 @@ result_label_info.pack()
 result_label_count = tk.Label(window, text="")
 result_label_count.pack()
 
-
 # loop the window
 window.mainloop()
 
-window.mainloop()
-
-
-
 taximetro = Taximetro()
 textoPlano = taximetro.guardarEnHistorial()
-
-

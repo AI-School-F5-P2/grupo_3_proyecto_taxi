@@ -24,6 +24,3 @@ class Historial:
         
 historial = Historial()
 guardar = historial.all()
-     
-     
-  
