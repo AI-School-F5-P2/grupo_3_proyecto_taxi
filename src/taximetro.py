@@ -21,8 +21,6 @@ class Taximetro:
         self.tarifa = 0
         self.yaSeAfrenado=False
         
-        
-
 
     # create methods
     def iniciar(self):
@@ -36,9 +34,7 @@ class Taximetro:
         else:
             result_label.config(text="El taximetro ya se a iniciado", font=("Arial", 12, "bold"),justify="center")
         
-        
-        
-        
+    # metodo cuando el coche se mueve
     def moverCoche(self):
         if self.taximetroActivo and not self.cocheEnMovimiento:
             if self.yaSeAfrenado:
@@ -54,9 +50,7 @@ class Taximetro:
             # print("El Coche ya esta en movimiento")
             result_label.config(text="El Coche ya esta en movimiento", font=("Arial", 12, "bold"),justify="center")
 
-
-
-
+    # metodo cuando se detiene el coche
     def detenerCoche(self):
         if self.cocheEnMovimiento:
             self.cocheEnMovimiento = False
@@ -68,16 +62,13 @@ class Taximetro:
             #print("El coche ya esta detenido")
             result_label.config(text="El coche ya esta denetido", font=("Arial", 12, "bold"),justify="center")
               
-              
-              
-              
+    # metodo para calcular la tarifa
     def finalizarRecorrido(self):
         if self.cocheEnMovimiento == False and self.taximetroActivo:
             result_label.config(text="Carrera terminada\n para inicar otra carrera da click en 'iniciar carrera'", font=("Arial", 12, "bold"),justify="center")
             self.calcularTarifa("detenido")
             self.agegrarABaseDeDatos()
             result_label_info.config(text=f"Total a pagar:  {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"),justify="center")
-            # button_init.pack(pady=10, ipady=10, ipadx=100)
             #reinicio todos los valores
             self.taximetroActivo=False
             self.cocheEnMovimiento= False
@@ -94,16 +85,10 @@ class Taximetro:
             # print("Para finalizar el recorrido primero debes detener el coche -> detener")
             result_label.config(text="Para finalizar el recorrido primero debes detener el coche -> detener", font=("Arial", 12, "bold"),justify="center")
     
-    
-    
-    
     # create method to close the window
     def finalizar_windows(self):
         window.destroy()
         
-
-
-
     #create method to calculate the rate
     def calcularTarifa(self,accion):
         monto:float
@@ -117,16 +102,11 @@ class Taximetro:
         self.tarifaTotal += self.tarifa
         result_label_info.config(text=f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"),justify="center")
 
-
-
-
     #extraer historial
     def extraerHistorial(self):
         database = Database()
         historial = database.all()
         return historial
-
-
 
     # agregar a la base de datos
     def agegrarABaseDeDatos(self):
@@ -169,11 +149,20 @@ class Taximetro:
     #         else:
     #             print("Contraseña Incorrecta")
 
-
 def iniciar_carrera():
-    contrasena = entry_contrasena.get()
+    # obtener la contreseña ingresada
+    contrasena_ingresada = entry_contrasena.get()
+    # instanciar la clase Database
+    database = Database()
+    # obtener la contraseña de la base de datos
+    contraseña_bbdd = database.password_get()
+    # obtener la contraseña ingresada encryptada
+    contaseña_hash = database.password_hash(contrasena_ingresada)
+    # testing
+        #unittest.main()
+    # logs 
     logs()
-    if contrasena == "1234":
+    if contaseña_hash == contraseña_bbdd:
         # Ocultar widgets de inicio de sesión
         label_contrasena.pack_forget()
         button_iniciar.pack_forget()
@@ -202,12 +191,12 @@ def finalizar_recorrido():
 
 taximetro = Taximetro()
 
-# create main loop
+# init tkinter, window, resoluction and title
 window = tk.Tk()
-
 window.title("Taxímetro")
 window.geometry("720x480")
 
+# create widgets
 button_init = tk.Button(window, text="Iniciar Carrera", command=iniciar_carrera)
 button_mover = tk.Button(window, text="Mover Coche", command=mover_coche)
 button_detener = tk.Button(window, text="Detener Coche", command=detener_coche)
@@ -234,34 +223,41 @@ entry_contrasena.configure(
 button_iniciar = tk.Button(window, text="Iniciar Carrera", command=iniciar_carrera)
 button_iniciar.pack(padx=10, pady=10, ipady=10, ipadx=100)
 
-
-
 # create image
 imagen = Image.open("../assets/taxi.png") 
 imagen_tk = ImageTk.PhotoImage(imagen)
 label = tk.Label(window, image=imagen_tk)
 label.pack()
-# Resto del código...
 
-# create text area
+# create message
 message_widget = tk.Message(window, text="\tBienvenido al Taxímetro:\n\nPara iniciar el taxi, presiona 'Iniciar '.\nPara mover el taxi, presiona 'Mover '.\nPara detener el taxi, presiona 'Detener '.\nPara finalizar el taxi, presiona 'Finalizar'.", width=400)
 message_widget.configure(
-    font=("Arial", 13),  # Tamaño y fuente del texto
-    borderwidth=1,  # Ancho del borde en píxeles
-    # Alineación del texto (centrado)
+    font=("Arial", 13), 
+    borderwidth=1,  
 )
-message_widget.pack(pady=10)  # Agregar un espacio de relleno vertical
+message_widget.pack(pady=10)  
 
 # label show the result
 result_label = tk.Label(window, text="")
 result_label.pack()
 
+# label show the result
 result_label_info = tk.Label(window, text="")
 result_label_info.pack()
 
+# label show the result
 result_label_count = tk.Label(window, text="")
 result_label_count.pack()
 
+
+# loop the window
 window.mainloop()
+
+window.mainloop()
+
+
+
+taximetro = Taximetro()
+textoPlano = taximetro.guardarEnHistorial()
 
 
