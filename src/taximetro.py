@@ -137,11 +137,6 @@ class Taximetro:
         return 
 
 
-
-
-
-
-
 # create method to run the program       
     # def correr(self):
     #         print("Para iniciar la carrera, ingresa 'iniciar'")

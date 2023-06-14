@@ -1,4 +1,3 @@
-from flask import Flask, request, jsonify
 import mysql.connector
 
 class Database:
@@ -27,8 +26,6 @@ class Database:
                 "fecha":element[2]
             }
             historial.append(data)
-        
-        print(historial)
         return historial
     
     # INSERTAR
@@ -43,6 +40,10 @@ class Database:
 
     
     
+ 
+# db = Database()
+# historial = db.all()
+# print(historial)
     
 
 
