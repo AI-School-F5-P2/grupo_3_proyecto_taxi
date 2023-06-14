@@ -265,6 +265,3 @@ result_label_count.pack()
 window.mainloop()
 
 
-taximetro = Taximetro()
-textoPlano = taximetro.guardarEnHistorial()
-

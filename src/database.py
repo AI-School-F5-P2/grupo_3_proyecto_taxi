@@ -39,29 +39,4 @@ class Database:
         cursor.execute(f"INSERT INTO `historial-carreras` (tarifa, fecha) VALUES ('{tarifa}','{fecha}')")
         conexion.commit()
         
-
-    
-     #guardar en un archivo .txt
-    def guardarEnHistorial(self):
-        # Nombre de la carpeta y archivo
-        carpeta = "historial"
-        archivo = "historial.txt"
-
-        # Comprobar si la carpeta existe, si no, crearla
-        if not os.path.exists(carpeta):
-            os.makedirs(carpeta)
-
-        # Ruta completa del archivo
-        ruta_archivo = os.path.join(carpeta, archivo)
-
-        # Abrir archivo de texto para escritura
-        archivo_txt = open(ruta_archivo, "w")   
-                    
-        db = Database()
-        historial = db.all()
-        # archivo_txt = open("datos.txt", "w")
-        for data in historial:
-            texto = f"ID: {data['id']} TARIFA: {data['tarifa']} FECHA: {data['fecha']} \n"
-            archivo_txt.write(texto)
-        archivo_txt.close()
     
