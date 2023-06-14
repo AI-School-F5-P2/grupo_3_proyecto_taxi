@@ -9,12 +9,12 @@ class Historial:
         
         if not os.path.exists(carpeta):
             os.makedirs(carpeta) 
-            ruta_archivo = os.path.join(carpeta, archivo)
+            os.path.join(carpeta, archivo)
         
         db = Database()
         historial = db.all()
         
-        archivo_txt = open(ruta_archivo, "w")
+        archivo_txt = open("../historial/historial.txt", "w")
         for data in historial:
             texto = f"ID: {data['id']} TARIFA: {data['tarifa']} FECHA: {data['fecha']} \n"
             archivo_txt.write(texto)
