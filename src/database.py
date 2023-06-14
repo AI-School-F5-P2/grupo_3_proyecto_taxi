@@ -1,9 +1,6 @@
 import mysql.connector
-<<<<<<< HEAD
 import hashlib
-=======
 import os
->>>>>>> d86be2a056dfe8620984b9b5424d5985dad94f14
 
 class Database:
     #CONEXION A BASE DE DATOS
@@ -43,6 +40,7 @@ class Database:
         cursor.execute(f"INSERT INTO `historial-carreras` (tarifa, fecha) VALUES ('{tarifa}','{fecha}')")
         conexion.commit()
         
+
     def password_hash(self, password):
         hash_object = hashlib.sha256()
         contraseña_bytes = password.encode('utf-8')
@@ -51,7 +49,6 @@ class Database:
         # Retornar el hash
         return hash_hex
 
-<<<<<<< HEAD
     def password_insert(self):
         password = "1234"
         hash_object = hashlib.sha256()
@@ -74,21 +71,17 @@ class Database:
         cursor.execute(f"SELECT * FROM DATA ")
         fila = cursor.fetchall()
         return fila[0][0]
-=======
     
      #guardar en un archivo .txt
     def guardarEnHistorial(self):
         # Nombre de la carpeta y archivo
         carpeta = "historial"
         archivo = "historial.txt"
->>>>>>> d86be2a056dfe8620984b9b5424d5985dad94f14
 
         # Comprobar si la carpeta existe, si no, crearla
         if not os.path.exists(carpeta):
             os.makedirs(carpeta)
 
-<<<<<<< HEAD
-=======
         # Ruta completa del archivo
         ruta_archivo = os.path.join(carpeta, archivo)
 
@@ -103,4 +96,4 @@ class Database:
             archivo_txt.write(texto)
         archivo_txt.close()
     
->>>>>>> d86be2a056dfe8620984b9b5424d5985dad94f14
+

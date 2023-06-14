@@ -12,7 +12,7 @@ class PruebaTesting(unittest.TestCase):
     # metodo para inicializar los parametros
     def initParam(self):
         # instanciar la clase
-        self.taximetro = Taximetro();
+        self.taximetro = Taximetro()
 
     def primerTestValue(self):
         self.assertFalse(self.taximetro.taximetroActivo) # indica que el taximetro no esta activo

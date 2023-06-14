@@ -120,15 +120,12 @@ class Taximetro:
         database.insertar(data)
         print("Se agrego a la base de datos")
         return 
-<<<<<<< HEAD
-=======
     
     #guardar en un archivo .txt
     
         
         # archivo_txt.close()
 
->>>>>>> d86be2a056dfe8620984b9b5424d5985dad94f14
 
 # create method to run the program       
     # def correr(self):
@@ -252,14 +249,15 @@ result_label_info.pack()
 result_label_count = tk.Label(window, text="")
 result_label_count.pack()
 
-<<<<<<< HEAD
+
 # loop the window
 window.mainloop()
-=======
+
 window.mainloop()
+
 
 
 taximetro = Taximetro()
 textoPlano = taximetro.guardarEnHistorial()
 
->>>>>>> d86be2a056dfe8620984b9b5424d5985dad94f14
+
