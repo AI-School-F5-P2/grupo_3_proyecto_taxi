@@ -1,6 +1,9 @@
-from flask import Flask, request, jsonify
 import mysql.connector
+<<<<<<< HEAD
 import hashlib
+=======
+import os
+>>>>>>> d86be2a056dfe8620984b9b5424d5985dad94f14
 
 class Database:
     #CONEXION A BASE DE DATOS
@@ -14,7 +17,7 @@ class Database:
         return self.conexion
     
     
-    # EXTRAER HISTORIAL COMPLETO
+    # EXTRAER HISTORIAL COMPLETO 
     def all(self):
         conexion = self.conector()
         cursor = conexion.cursor()
@@ -24,12 +27,11 @@ class Database:
         historial = []
         for element in fila:
             data = {
+                "id":element[0],
                 "tarifa":element[1],
                 "fecha":element[2]
             }
             historial.append(data)
-        
-        print(historial)
         return historial
     
     # INSERTAR
@@ -49,6 +51,7 @@ class Database:
         # Retornar el hash
         return hash_hex
 
+<<<<<<< HEAD
     def password_insert(self):
         password = "1234"
         hash_object = hashlib.sha256()
@@ -71,5 +74,33 @@ class Database:
         cursor.execute(f"SELECT * FROM DATA ")
         fila = cursor.fetchall()
         return fila[0][0]
+=======
+    
+     #guardar en un archivo .txt
+    def guardarEnHistorial(self):
+        # Nombre de la carpeta y archivo
+        carpeta = "historial"
+        archivo = "historial.txt"
+>>>>>>> d86be2a056dfe8620984b9b5424d5985dad94f14
 
+        # Comprobar si la carpeta existe, si no, crearla
+        if not os.path.exists(carpeta):
+            os.makedirs(carpeta)
 
+<<<<<<< HEAD
+=======
+        # Ruta completa del archivo
+        ruta_archivo = os.path.join(carpeta, archivo)
+
+        # Abrir archivo de texto para escritura
+        archivo_txt = open(ruta_archivo, "w")   
+                    
+        db = Database()
+        historial = db.all()
+        # archivo_txt = open("datos.txt", "w")
+        for data in historial:
+            texto = f"ID: {data['id']} TARIFA: {data['tarifa']} FECHA: {data['fecha']} \n"
+            archivo_txt.write(texto)
+        archivo_txt.close()
+    
+>>>>>>> d86be2a056dfe8620984b9b5424d5985dad94f14
