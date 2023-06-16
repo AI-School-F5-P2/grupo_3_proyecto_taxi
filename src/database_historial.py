@@ -3,7 +3,7 @@ import hashlib
 import os
 import asyncio
 
-class Database:
+class Database_historial:
     #CONEXION A BASE DE DATOS
     def __init__(self):   
         try:
@@ -33,6 +33,7 @@ class Database:
                 "fecha":element[2]
             }
             historial.append(data)
+        self.guardarEnTextoPlano(historial)
         return historial
     
     # INSERTAR
@@ -46,39 +47,11 @@ class Database:
         self.conexion.commit()
 
 
-    def password_hash(self, password):
-        hash_object = hashlib.sha256()
-        contraseña_bytes = password.encode('utf-8')
-        hash_object.update(contraseña_bytes)
-        hash_hex = hash_object.hexdigest()
-        # Retornar el hash
-        return hash_hex
-
-    def password_insert(self):
-        password = "1234"
-        hash_object = hashlib.sha256()
-        contraseña_bytes = password.encode('utf-8')
-        hash_object.update(contraseña_bytes)
-        hash_hex = hash_object.hexdigest()
-        # Retornar el hash
-
-        cursor = self.conexion.cursor()
-        cursor.execute(f"INSERT INTO DATA (password) VALUE ('{hash_hex}')")
-        self.conexion.commit()
-        
-        # fila = cursor.fetchall()
-        # print(fila)
-        return hash_hex
-
-    def password_get(self):
-        cursor = self.conexion.cursor()
-        cursor.execute(f"SELECT * FROM DATA ")
-        fila = cursor.fetchall()
-        return fila[0][0]
+   
     
      #guardar en un archivo .txt
-    def guardarEnHistorial(self):
-        carpeta = "historial"
+    def guardarEnTextoPlano(self,historial):
+        carpeta = "../historial"
         archivo = "historial.txt"
 
         # Comprobar si la carpeta existe, si no, crearla
@@ -91,8 +64,8 @@ class Database:
         # Abrir archivo de texto para escritura
         archivo_txt = open(ruta_archivo, "w")   
                     
-        db = Database()
-        historial = db.all()
+        # db = Database()
+        # historial = db.all()
         # archivo_txt = open("datos.txt", "w")
         for data in historial:
             texto = f"ID: {data['id']} TARIFA: {data['tarifa']} FECHA: {data['fecha']} \n"
@@ -100,3 +73,7 @@ class Database:
         archivo_txt.close()
     
 
+
+# #crear contraseña
+# pas = Database()
+# pas.password_insert()

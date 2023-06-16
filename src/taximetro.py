@@ -4,9 +4,10 @@ from datetime import datetime
 import tkinter as tk
 from PIL import ImageTk, Image
 from logs import logs
-from database import Database
+from database_historial import Database_historial
 import os
-from getHistorial import Historial
+import threading
+from database_data import Data
 
 class Taximetro:
     def __init__(self):
@@ -17,10 +18,18 @@ class Taximetro:
         self.tarifaTotal = 0
         self.tarifa = 0
         self.yaSeAfrenado = False
+        self.precio1 = 0
+        self.precio2 = 0
 
 
 
     def iniciar(self):
+        data = Data()
+        precios = data.precios()
+        
+        self.precio1 = precios[0]["precio1"]
+        self.precio2 = precios[0]["precio2"]
+        
         result_label_info.config(text="")
         if not self.taximetroActivo:
             if self.tarifaTotal > 0:
@@ -30,6 +39,8 @@ class Taximetro:
             self.tiempoInicio = time.time()
         else:
             result_label.config(text="El taximetro ya se ha iniciado", font=("Arial", 12, "bold"), justify="center")
+
+        
 
 
 
@@ -75,20 +86,36 @@ class Taximetro:
 
 
 
+
+    def cambiarPrecios(self, precio_det, precio_mov):
+        if not self.taximetroActivo:
+            db = Data()
+            db.editarPrecios(precio_det, precio_mov)
+        else:
+            print("Para cambiar los precios debes de terminar la carrera")
+            
         
 
+        
     def calcularTarifa(self, accion):
-        monto = 0.02 if accion == "detenido" else 0.05
+        monto = self.precio1 if accion == "detenido" else self.precio2
         self.tiempoTrancurrido = time.time() - self.tiempoInicio
-        self.tarifa = int(self.tiempoTrancurrido) * monto
+        self.tarifa = self.tiempoTrancurrido * monto
         self.tarifaTotal += self.tarifa
         result_label_info.config(text=f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"), justify="center")
 
 
 
+    def mostrarHistorial(self):
+        database = Database_historial()
+        historial = database.all()
+        return historial
+
+
+
     def agregarABaseDeDatos(self):
         fecha_actual = datetime.now()
-        database = Database()
+        database = Database_historial()
         fecha_hora_actual_str = fecha_actual.strftime('%Y-%m-%d %H:%M:%S')
         data = {
             "tarifa": str(self.tarifaTotal),
@@ -116,9 +143,9 @@ class Taximetro:
 
 def iniciarCarrera():
     contrasena_ingresada = entry_contrasena.get()
-    database = Database()
-    contraseña_bbdd = database.password_get()
-    contaseña_hash = database.password_hash(contrasena_ingresada)
+    usuario = Data()
+    contraseña_bbdd = usuario.password_get()
+    contaseña_hash = usuario.password_hash(contrasena_ingresada)
     logs()
     if contaseña_hash == contraseña_bbdd:
         label_contrasena.pack_forget()
@@ -196,8 +223,5 @@ result_label_count = tk.Label(window, text="")
 result_label_count.pack()
 
 window.mainloop()
-
-
-
 
 
