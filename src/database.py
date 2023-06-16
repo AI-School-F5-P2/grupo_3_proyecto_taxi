@@ -1,23 +1,27 @@
 import mysql.connector
 import hashlib
 import os
+import asyncio
 
 class Database:
     #CONEXION A BASE DE DATOS
-    def conector(self):
-        self.conexion = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="",
-            database="taxi_database"
-        )
-        return self.conexion
-    
+    def __init__(self):   
+        try:
+            self.conexion = mysql.connector.connect(
+                host="localhost",
+                user="root",
+                password="",
+                database="taxi_database"
+            )
+            
+        except mysql.connector.Error as error:
+            print("Error al conectar a la base de datos:", error)
+           
     
     # EXTRAER HISTORIAL COMPLETO 
     def all(self):
-        conexion = self.conector()
-        cursor = conexion.cursor()
+        # conexion = self.conexion()
+        cursor = self.conexion.cursor()
         cursor.execute("SELECT * FROM  `historial-carreras`")
         fila = cursor.fetchall()
         
@@ -33,13 +37,14 @@ class Database:
     
     # INSERTAR
     def insertar(self, data):
-        tarifa = data["tarifa"]
-        fecha = data["fecha"]
-        conexion = self.conector()
-        cursor = conexion.cursor()
-        cursor.execute(f"INSERT INTO `historial-carreras` (tarifa, fecha) VALUES ('{tarifa}','{fecha}')")
-        conexion.commit()
-        
+        tarifa =  data["tarifa"]
+        fecha =  data["fecha"]
+        cursor = self.conexion.cursor()
+        query = "INSERT INTO `historial-carreras` (tarifa, fecha) VALUES (%s, %s)"
+        values = (tarifa, fecha)
+        cursor.execute(query, values)
+        self.conexion.commit()
+
 
     def password_hash(self, password):
         hash_object = hashlib.sha256()
@@ -56,25 +61,23 @@ class Database:
         hash_object.update(contraseña_bytes)
         hash_hex = hash_object.hexdigest()
         # Retornar el hash
-        conexion = self.conector()
-        cursor = conexion.cursor()
+
+        cursor = self.conexion.cursor()
         cursor.execute(f"INSERT INTO DATA (password) VALUE ('{hash_hex}')")
-        conexion.commit()
+        self.conexion.commit()
         
         # fila = cursor.fetchall()
         # print(fila)
         return hash_hex
 
     def password_get(self):
-        conexion = self.conector()
-        cursor = conexion.cursor()
+        cursor = self.conexion.cursor()
         cursor.execute(f"SELECT * FROM DATA ")
         fila = cursor.fetchall()
         return fila[0][0]
     
      #guardar en un archivo .txt
     def guardarEnHistorial(self):
-        # Nombre de la carpeta y archivo
         carpeta = "historial"
         archivo = "historial.txt"
 
