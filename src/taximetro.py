@@ -40,6 +40,15 @@ class Taximetro:
             if self.yaSeAfrenado:
                 self.calcularTarifa("detenido")
                 
+            result_label_info.config(
+            text=f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.",
+            font=("Courier", 12, "bold"),
+            justify="center",
+            fg="red",
+            bg="black",
+            padx=10,
+            pady=10
+            )
             self.cocheEnMovimiento = True
             self.tiempoInicio = time.time()
             result_label.config(text="Coche en movimiento", font=("Arial", 12, "bold"),justify="center")
@@ -251,6 +260,3 @@ result_label_count.pack()
 
 # loop the window
 window.mainloop()
-
-taximetro = Taximetro()
-textoPlano = taximetro.guardarEnHistorial()
