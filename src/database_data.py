@@ -26,7 +26,8 @@ class Data:
         
     def editarPrecios(self, precio_det, precio_mov):
         cursor = self.conexion.cursor()
-        cursor.execute(f"UPDATE data SET precio_mov = {precio_mov} , precio_det = {precio_det}")
+        cursor.execute("UPDATE data SET precio_mov = %s, precio_det = %s", (precio_mov, precio_det))
+        
         self.conexion.commit()
         # self.conexion.close()
         # cursor.close()

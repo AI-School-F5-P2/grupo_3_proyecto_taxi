@@ -88,6 +88,7 @@ class Taximetro:
             self.agregarABaseDeDatos()
             result_label_info.config(text=f"Total a pagar: {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"), justify="center")
             self.reiniciarValores()
+            modificarPrecio_BTN.pack(padx=10, pady=10, side="right")
         elif not self.taximetroActivo:
             result_label.config(text="No hay carrera en curso", font=("Arial", 12, "bold"), justify="center")
         else:
@@ -96,10 +97,13 @@ class Taximetro:
 
 
 
-    def cambiarPrecios(self, precio_det, precio_mov):
+    def cambiarPreciosBD(self, precio_Det, precio_Mov):
         if not self.taximetroActivo:
             db = Data()
+            precio_det = precio_Det.get()
+            precio_mov = precio_Mov.get()
             db.editarPrecios(precio_det, precio_mov)
+            
         else:
             print("Para cambiar los precios debes de terminar la carrera")
             
@@ -110,8 +114,8 @@ class Taximetro:
         monto = self.precio1 if accion == "detenido" else self.precio2
         self.tiempoTrancurrido = time.time() - self.tiempoInicio
         self.tarifa = self.tiempoTrancurrido * monto
-        self.tarifaTotal += self.tarifa
-        result_label_info.config(text=f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"), justify="center")
+        self.tarifaTotal += self.tarifa 
+        result_label_info.config(text=f"Se ha acumulado una tarifa de {self.tarifa:.2f} Euros.", font=("Arial", 12, "bold"), justify="center")
 
 
 
@@ -156,6 +160,7 @@ def iniciarCarrera():
     contaseña_hash = usuario.password_hash(contrasena_ingresada)
     logs()
     if contaseña_hash == contraseña_bbdd:
+        
         label_contrasena.pack_forget()
         button_iniciar.pack_forget()
         entry_contrasena.pack_forget()
@@ -166,6 +171,7 @@ def iniciarCarrera():
         button_finalizar.pack(pady=10, ipady=10, ipadx=90)
         button_close.pack()
         taximetro.iniciar()
+        # modificarPrecio_BTN.pack(padx=10, pady=10, side="right")
     else:
         label_contrasena.config(text="Contraseña Incorrecta", font=("Arial", 12, "bold"), justify="center")
         label_contrasena.pack(pady=10, ipady=10, ipadx=100)
@@ -178,6 +184,42 @@ def detenerCoche():
 
 def finalizarRecorrido():
     taximetro.finalizarRecorrido()
+    
+def crearVentanaModificarPrecio():
+    taximetro = Taximetro()
+    
+    def cerrar_reiniciar():
+        nueva_ventana.destroy()
+    
+    nueva_ventana = tk.Toplevel(window)
+    nueva_ventana.title("Ventana Nueva")
+    nueva_ventana.geometry("400x300")
+
+    frame = tk.Frame(nueva_ventana)
+    frame.pack()
+
+    label = tk.Label(frame, text="¡Modificar precios!")
+    label.grid(row=0, column=0, padx=10, pady=10)
+    
+    label = tk.Label(frame, text="¡Precio sin movimiento!")
+    label.grid(row=0, column=0, padx=10, pady=10)
+    precio_sin_movimiento = tk.Entry(nueva_ventana)
+    sin_movimiento = precio_sin_movimiento.get()
+    precio_sin_movimiento.pack(pady=10, ipady=10, ipadx=50)
+        
+        
+    label = tk.Label(frame, text="¡Precio con movimiento!")
+    label.grid(row=0, column=0, padx=10, pady=10)
+    precio_con_movimiento = tk.Entry(nueva_ventana)
+    con_movimiento = precio_con_movimiento.get()
+    print(con_movimiento)
+    precio_con_movimiento.pack(pady=10, ipady=10, ipadx=50)
+    
+    modificarPrecio_BTN = tk.Button(nueva_ventana, text="Modificar precio", command=lambda:( taximetro.cambiarPreciosBD(precio_sin_movimiento, precio_con_movimiento), cerrar_reiniciar()))
+    modificarPrecio_BTN.pack()
+    
+    
+
 
 taximetro = Taximetro()
 
@@ -213,6 +255,11 @@ imagen = Image.open("../assets/taxi.png")
 imagen_tk = ImageTk.PhotoImage(imagen)
 label = tk.Label(window, image=imagen_tk)
 label.pack()
+
+
+# modificar
+
+modificarPrecio_BTN = tk.Button(window, text="Modificar precio", command=crearVentanaModificarPrecio)
 
 message_widget = tk.Message(window, text="\tBienvenido al Taxímetro:\n\nPara iniciar el taxi, presiona 'Iniciar '.\nPara mover el taxi, presiona 'Mover '.\nPara detener el taxi, presiona 'Detener '.\nPara finalizar el taxi, presiona 'Finalizar'.", width=400)
 message_widget.configure(
