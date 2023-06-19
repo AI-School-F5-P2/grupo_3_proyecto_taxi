@@ -49,7 +49,20 @@ class Taximetro:
         if self.taximetroActivo and not self.cocheEnMovimiento:
             if self.yaSeAfrenado:
                 self.calcularTarifa("detenido")
+<<<<<<< HEAD
+                
+            result_label_info.config(
+            text=f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.",
+            font=("Courier", 12, "bold"),
+            justify="center",
+            fg="red",
+            bg="black",
+            padx=10,
+            pady=10
+            )
+=======
 
+>>>>>>> 389e91294db6f056f7ffafe7ff173c357366414f
             self.cocheEnMovimiento = True
             self.tiempoInicio = time.time()
             result_label.config(text="Coche en movimiento", font=("Arial", 12, "bold"), justify="center")
