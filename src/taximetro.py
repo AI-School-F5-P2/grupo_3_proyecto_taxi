@@ -111,11 +111,15 @@ class Taximetro:
 
         
     def calcularTarifa(self, accion):
-        monto = self.precio1 if accion == "detenido" else self.precio2
+        if accion == "moviendose":
+            monto = self.precio2
+        elif accion == "detenido":
+            monto = self.precio1
+     
         self.tiempoTrancurrido = time.time() - self.tiempoInicio
         self.tarifa = self.tiempoTrancurrido * monto
         self.tarifaTotal += self.tarifa 
-        result_label_info.config(text=f"Se ha acumulado una tarifa de {self.tarifa:.2f} Euros.", font=("Arial", 12, "bold"), justify="center")
+        result_label_info.config(text=f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"), justify="center")
 
 
 
