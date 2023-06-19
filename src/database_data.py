@@ -73,7 +73,7 @@ class Data:
 # usuario.password_insert(nueva_clave)
 
 ##cambiar precios
-usuario = Data()
-precio_det = 0.10
-precio_mov = 0.15
-usuario.editarPrecios(precio_det, precio_mov)
+# usuario = Data()
+# precio_det = 0.02
+# precio_mov = 0.05
+# usuario.editarPrecios(precio_det, precio_mov)

@@ -71,3 +71,5 @@ class TestTaximetro(unittest.TestCase):
             self.assertEqual(self.taximetro.tarifa, 0)
             self.assertEqual(self.taximetro.tarifaTotal, 0)
         
+
+
