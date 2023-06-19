@@ -38,36 +38,33 @@ class Taximetro:
             result_label.config(text="Taximetro inicializado", font=("Arial", 12, "bold"), justify="center")
             self.taximetroActivo = True
             self.tiempoInicio = time.time()
+            self.actualizar_precio = window.after(1000, self.actualizarPrecio)
         else:
             result_label.config(text="El taximetro ya se ha iniciado", font=("Arial", 12, "bold"), justify="center")
 
-        
+    # 
+    def detenerActualizacionPrecio(self):
+        if self.actualizar_precio is not None:
+            window.after_cancel(self.actualizar_precio)
+            self.actualizar_precio = None
 
-
+    def actualizarPrecio(self):
+        self.calcularTarifa("moviendose")
+        self.actualizar_precio = window.after(1000, self.actualizarPrecio)
 
     def moverCoche(self):
         if self.taximetroActivo and not self.cocheEnMovimiento:
             if self.yaSeAfrenado:
                 self.calcularTarifa("detenido")
-                
-            result_label_info.config(
-            text=f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.",
-            font=("Courier", 12, "bold"),
-            justify="center",
-            fg="red",
-            bg="black",
-            padx=10,
-            pady=10
-            )
-
             self.cocheEnMovimiento = True
             self.tiempoInicio = time.time()
             result_label.config(text="Coche en movimiento", font=("Arial", 12, "bold"), justify="center")
+            result_label_info.config(text=f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"), justify="center")
         elif not self.taximetroActivo:
             result_label.config(text="Antes de poner en movimiento el coche, debes inicializar el taximetro", font=("Arial", 12, "bold"), justify="center")
         else:
             result_label.config(text="El Coche ya está en movimiento", font=("Arial", 12, "bold"), justify="center")
-
+            result_label_info.config(text=f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"), justify="center")
 
 
     def detenerCoche(self):
@@ -86,6 +83,7 @@ class Taximetro:
     def finalizarRecorrido(self):
         if self.cocheEnMovimiento == False and self.taximetroActivo:
             result_label.config(text="Carrera terminada. Para iniciar otra carrera, haz clic en 'Iniciar Carrera'", font=("Arial", 12, "bold"), justify="center")
+            self.detenerActualizacionPrecio()
             self.calcularTarifa("detenido")
             self.agregarABaseDeDatos()
             result_label_info.config(text=f"Total a pagar: {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"), justify="center")
@@ -150,7 +148,6 @@ class Taximetro:
         window.destroy()
 
 
-#################################################
 
 def iniciarCarrera():
     contrasena_ingresada = entry_contrasena.get()
