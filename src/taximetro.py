@@ -27,8 +27,9 @@ class Taximetro:
         data = Data()
         precios = data.precios()
         
-        self.precio1 = precios[0]["precio1"]
-        self.precio2 = precios[0]["precio2"]
+        self.precio1 = precios[0]["precio1"] if precios else 0.02
+        self.precio2 = precios[0]["precio2"] if precios else 0.05
+
         
         result_label_info.config(text="")
         if not self.taximetroActivo:
