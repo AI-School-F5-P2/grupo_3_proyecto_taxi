@@ -18,8 +18,8 @@ class Data:
         precios = []
         for fila in fila:
             precio = {
-                "precio1":fila[0],
-                "precio2":fila[1]
+                "precio_mov":fila[0],
+                "precio_det":fila[1]
             }
             precios.append(precio)
         return precios

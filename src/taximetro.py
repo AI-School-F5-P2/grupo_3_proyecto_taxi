@@ -18,19 +18,20 @@ class Taximetro:
         self.tarifaTotal = 0
         self.tarifa = 0
         self.yaSeAfrenado = False
-        self.precio1 = 0
-        self.precio2 = 0
+        self.precio_mov = 0
+        self.precio_det = 0
+        self.precioActual=0
+        self.a=0
 
 
 
     def iniciar(self):
         data = Data()
         precios = data.precios()
-        
-        self.precio1 = precios[0]["precio1"] if precios else 0.02
-        self.precio2 = precios[0]["precio2"] if precios else 0.05
+        self.precio_mov = precios[0]["precio_mov"] if precios else 0.05
+        self.precio_det = precios[0]["precio_det"] if precios else 0.02
+        self.precioActual = self.precio_det
 
-        
         result_label_info.config(text="")
         if not self.taximetroActivo:
             if self.tarifaTotal > 0:
@@ -42,20 +43,10 @@ class Taximetro:
         else:
             result_label.config(text="El taximetro ya se ha iniciado", font=("Arial", 12, "bold"), justify="center")
 
-    # 
-    def detenerActualizacionPrecio(self):
-        if self.actualizar_precio is not None:
-            window.after_cancel(self.actualizar_precio)
-            self.actualizar_precio = None
-
-    def actualizarPrecio(self):
-        self.calcularTarifa("moviendose")
-        self.actualizar_precio = window.after(1000, self.actualizarPrecio)
 
     def moverCoche(self):
         if self.taximetroActivo and not self.cocheEnMovimiento:
-            if self.yaSeAfrenado:
-                self.calcularTarifa("detenido")
+            self.precioActual = self.precio_mov
             self.cocheEnMovimiento = True
             self.tiempoInicio = time.time()
             result_label.config(text="Coche en movimiento", font=("Arial", 12, "bold"), justify="center")
@@ -69,9 +60,9 @@ class Taximetro:
 
     def detenerCoche(self):
         if self.cocheEnMovimiento:
+            self.precioActual = self.precio_det
             self.cocheEnMovimiento = False
             self.yaSeAfrenado = True
-            self.calcularTarifa("moviendose")
             result_label.config(text="El Coche se ha detenido", font=("Arial", 12, "bold"), justify="center")
             self.tiempoInicio = time.time()
         else:
@@ -84,7 +75,6 @@ class Taximetro:
         if self.cocheEnMovimiento == False and self.taximetroActivo:
             result_label.config(text="Carrera terminada. Para iniciar otra carrera, haz clic en 'Iniciar Carrera'", font=("Arial", 12, "bold"), justify="center")
             self.detenerActualizacionPrecio()
-            self.calcularTarifa("detenido")
             self.agregarABaseDeDatos()
             result_label_info.config(text=f"Total a pagar: {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"), justify="center")
             self.reiniciarValores()
@@ -107,21 +97,18 @@ class Taximetro:
         else:
             print("Para cambiar los precios debes de terminar la carrera")
             
-        
+            
+    def detenerActualizacionPrecio(self):
+        if self.actualizar_precio is not None:
+            window.after_cancel(self.actualizar_precio)
+            self.actualizar_precio = None
 
-        
-    def calcularTarifa(self, accion):
-        if accion == "moviendose":
-            monto = self.precio2
-        elif accion == "detenido":
-            monto = self.precio1
-     
-        self.tiempoTrancurrido = time.time() - self.tiempoInicio
-        self.tarifa = self.tiempoTrancurrido * monto
-        self.tarifaTotal += self.tarifa 
+    def actualizarPrecio(self):
+        self.tarifaTotal += self.precioActual
         result_label_info.config(text=f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"), justify="center")
+        self.actualizar_precio = window.after(1000, self.actualizarPrecio)
 
-
+        
 
     def mostrarHistorial(self):
         database = Database_historial()
