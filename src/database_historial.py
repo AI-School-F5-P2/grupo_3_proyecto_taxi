@@ -2,10 +2,14 @@ import mysql.connector
 import hashlib
 import os
 import asyncio
+from logs import Logs
+import shutil
+import os
 
 class Database_historial:
     #CONEXION A BASE DE DATOS
     def __init__(self):   
+        self.logs = Logs()
         try:
             self.conexion = mysql.connector.connect(
                 host="localhost",
@@ -13,8 +17,8 @@ class Database_historial:
                 password="",
                 database="taxi_database"
             )
-            
         except mysql.connector.Error as error:
+            self.logs.error("Error en Database_historial.py al conectar a la base de datos:", error)
             print("Error al conectar a la base de datos:", error)
            
     
@@ -71,9 +75,20 @@ class Database_historial:
             texto = f"ID: {data['id']} TARIFA: {data['tarifa']} FECHA: {data['fecha']} \n"
             archivo_txt.write(texto)
         archivo_txt.close()
+        self.generarCopiaEnPC()
     
+    
+    
+    def generarCopiaEnPC(self):
+       
+        ruta_original = "../historial/historial.txt"
+        carpeta_descargas = os.path.expanduser("~/Downloads")
+        archivoCopia = "historial_del_taximetro.txt"
+        
+        ruta_destino = os.path.join(carpeta_descargas, archivoCopia)
+        shutil.copy(ruta_original, ruta_destino)
+
+        return "Se descargo en la carpeta de descargas"
 
 
-# #crear contraseña
-# pas = Database()
-# pas.password_insert()
+
