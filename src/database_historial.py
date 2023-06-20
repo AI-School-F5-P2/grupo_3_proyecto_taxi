@@ -11,6 +11,7 @@ class Database_historial:
                 host="localhost",
                 user="root",
                 password="",
+
                 database="taxi_database"
             )
             
@@ -74,6 +75,12 @@ class Database_historial:
     
 
 
+
+    
 # #crear contraseña
 # pas = Database()
 # pas.password_insert()
+
+
+
+ 

@@ -21,7 +21,8 @@ class Taximetro:
         self.precio_mov = 0
         self.precio_det = 0
         self.precioActual=0
-        self.a=0
+        self.actualizar_precio:any
+        self.actualizar_precio = None
 
 
 
@@ -78,13 +79,18 @@ class Taximetro:
             self.agregarABaseDeDatos()
             result_label_info.config(text=f"Total a pagar: {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"), justify="center")
             self.reiniciarValores()
-            modificarPrecio_BTN.pack(padx=10, pady=10, side="right")
+            # modificarPrecio_BTN.pack(padx=10, pady=10, side="right")
         elif not self.taximetroActivo:
             result_label.config(text="No hay carrera en curso", font=("Arial", 12, "bold"), justify="center")
         else:
             result_label.config(text="Para finalizar el recorrido, primero debes detener el coche", font=("Arial", 12, "bold"), justify="center")
 
 
+
+    def detenerActualizacionPrecio(self):
+        if self.actualizar_precio is not None:
+            window.after_cancel(self.actualizar_precio)
+            self.actualizar_precio = None
 
 
     def cambiarPreciosBD(self, precio_Det, precio_Mov):
@@ -93,15 +99,10 @@ class Taximetro:
             precio_det = precio_Det.get()
             precio_mov = precio_Mov.get()
             db.editarPrecios(precio_det, precio_mov)
-            
         else:
             print("Para cambiar los precios debes de terminar la carrera")
             
             
-    def detenerActualizacionPrecio(self):
-        if self.actualizar_precio is not None:
-            window.after_cancel(self.actualizar_precio)
-            self.actualizar_precio = None
 
     def actualizarPrecio(self):
         self.tarifaTotal += self.precioActual
@@ -109,12 +110,10 @@ class Taximetro:
         self.actualizar_precio = window.after(1000, self.actualizarPrecio)
 
         
-
     def mostrarHistorial(self):
         database = Database_historial()
         historial = database.all()
         return historial
-
 
 
     def agregarABaseDeDatos(self):
@@ -137,6 +136,11 @@ class Taximetro:
         self.tarifaTotal = 0
         self.tarifa = 0
         self.yaSeAfrenado = False
+        self.precio_mov = 0
+        self.precio_det = 0
+        self.precioActual=0
+        self.actualizar_precio = None
+        print(self.tarifaTotal)
 
 
     def finalizarWindows(self):
@@ -144,6 +148,19 @@ class Taximetro:
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+#TKINTER
 def iniciarCarrera():
     contrasena_ingresada = entry_contrasena.get()
     usuario = Data()
@@ -151,7 +168,7 @@ def iniciarCarrera():
     contaseña_hash = usuario.password_hash(contrasena_ingresada)
     logs()
     if contaseña_hash == contraseña_bbdd:
-        
+
         label_contrasena.pack_forget()
         button_iniciar.pack_forget()
         entry_contrasena.pack_forget()
@@ -162,7 +179,7 @@ def iniciarCarrera():
         button_finalizar.pack(pady=10, ipady=10, ipadx=90)
         button_close.pack()
         taximetro.iniciar()
-        # modificarPrecio_BTN.pack(padx=10, pady=10, side="right")
+        modificarPrecio_BTN.pack(padx=10, pady=10, side="right")
     else:
         label_contrasena.config(text="Contraseña Incorrecta", font=("Arial", 12, "bold"), justify="center")
         label_contrasena.pack(pady=10, ipady=10, ipadx=100)
@@ -180,7 +197,11 @@ def crearVentanaModificarPrecio():
     taximetro = Taximetro()
     
     def cerrar_reiniciar():
+        taximetro.detenerActualizacionPrecio()
+        taximetro.reiniciarValores()
+        taximetro.iniciar()
         nueva_ventana.destroy()
+        
     
     nueva_ventana = tk.Toplevel(window)
     nueva_ventana.title("Ventana Nueva")
@@ -195,15 +216,12 @@ def crearVentanaModificarPrecio():
     label = tk.Label(frame, text="¡Precio sin movimiento!")
     label.grid(row=0, column=0, padx=10, pady=10)
     precio_sin_movimiento = tk.Entry(nueva_ventana)
-    sin_movimiento = precio_sin_movimiento.get()
     precio_sin_movimiento.pack(pady=10, ipady=10, ipadx=50)
         
         
     label = tk.Label(frame, text="¡Precio con movimiento!")
     label.grid(row=0, column=0, padx=10, pady=10)
     precio_con_movimiento = tk.Entry(nueva_ventana)
-    con_movimiento = precio_con_movimiento.get()
-    print(con_movimiento)
     precio_con_movimiento.pack(pady=10, ipady=10, ipadx=50)
     
     modificarPrecio_BTN = tk.Button(nueva_ventana, text="Modificar precio", command=lambda:( taximetro.cambiarPreciosBD(precio_sin_movimiento, precio_con_movimiento), cerrar_reiniciar()))
