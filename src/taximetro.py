@@ -3,7 +3,7 @@ import time
 from datetime import datetime
 import tkinter as tk
 from PIL import ImageTk, Image
-from logs import logs
+from logs import Logs
 from database_historial import Database_historial
 import os
 import threading
@@ -13,60 +13,65 @@ class Taximetro:
     def __init__(self):
         self.taximetroActivo = False
         self.cocheEnMovimiento = False
-        self.tiempoInicio = 0
-        self.tiempoTrancurrido = 0
         self.tarifaTotal = 0
-        self.tarifa = 0
         self.yaSeAfrenado = False
         self.precio_mov = 0
         self.precio_det = 0
         self.precioActual=0
-        self.actualizar_precio:any
         self.actualizar_precio = None
-
+        self.logs = Logs()
+       
+        
+    def aplicarPrecios(self):
+        self.data = Data()
+        self.precios = self.data.precios()
+        self.precio_mov = self.precios[0]["precio_mov"] if self.precios else 0.05
+        self.precio_det = self.precios[0]["precio_det"] if self.precios else 0.02
+        self.precioActual = self.precio_det
+        
 
 
     def iniciar(self):
-        data = Data()
-        precios = data.precios()
-        self.precio_mov = precios[0]["precio_mov"] if precios else 0.05
-        self.precio_det = precios[0]["precio_det"] if precios else 0.02
-        self.precioActual = self.precio_det
-
+        self.aplicarPrecios()
+        self.data = Data()
         result_label_info.config(text="")
         if not self.taximetroActivo:
+            self.logs.info("Se a iniciado el taximetro")
             if self.tarifaTotal > 0:
                 self.tarifaTotal = 0
             result_label.config(text="Taximetro inicializado", font=("Arial", 12, "bold"), justify="center")
             self.taximetroActivo = True
-            # self.tiempoInicio = time.time()
             self.actualizar_precio = window.after(1000, self.actualizarPrecio)
         else:
+            self.logs.warning("Se intento de iniciar el taxímetro cuando ya está activo")
             result_label.config(text="El taximetro ya se ha iniciado", font=("Arial", 12, "bold"), justify="center")
 
 
     def moverCoche(self):
         if self.taximetroActivo and not self.cocheEnMovimiento:
+            self.logs.info("Se a empezado a mover el coche")
             self.precioActual = self.precio_mov
             self.cocheEnMovimiento = True
-            # self.tiempoInicio = time.time()
             result_label.config(text="Coche en movimiento", font=("Arial", 12, "bold"), justify="center")
             result_label_info.config(text=f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"), justify="center")
         elif not self.taximetroActivo:
+            self.logs.warning("Se intento poner en movimiento el coche antes de inicializar el taximetro")
             result_label.config(text="Antes de poner en movimiento el coche, debes inicializar el taximetro", font=("Arial", 12, "bold"), justify="center")
         else:
+            self.logs.warning("Se intento poner en movimiento el coche ya estando en movimiento")
             result_label.config(text="El Coche ya está en movimiento", font=("Arial", 12, "bold"), justify="center")
             result_label_info.config(text=f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"), justify="center")
 
 
     def detenerCoche(self):
         if self.cocheEnMovimiento:
+            self.logs.info("El coche se detuvo")
             self.precioActual = self.precio_det
             self.cocheEnMovimiento = False
             self.yaSeAfrenado = True
             result_label.config(text="El Coche se ha detenido", font=("Arial", 12, "bold"), justify="center")
-            # self.tiempoInicio = time.time()
         else:
+            self.logs.warning("se intento detener el coche cuando ya estaba detenido")
             result_label.config(text="El coche ya está detenido", font=("Arial", 12, "bold"), justify="center")
 
 
@@ -74,16 +79,27 @@ class Taximetro:
 
     def finalizarRecorrido(self):
         if self.cocheEnMovimiento == False and self.taximetroActivo:
+            self.logs.info(f"Se finalizo la carrera, con una tarifa total de {self.tarifaTotal:.2f}")
             result_label.config(text="Carrera terminada. Para iniciar otra carrera, haz clic en 'Iniciar Carrera'", font=("Arial", 12, "bold"), justify="center")
             self.detenerActualizacionPrecio()
-            self.agregarABaseDeDatos()
+            self.guardarRegistroTaximetro_BD()
             result_label_info.config(text=f"Total a pagar: {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"), justify="center")
             self.reiniciarValores()
             modificarPrecio_BTN.pack(padx=10, pady=10, side="right")
         elif not self.taximetroActivo:
+            self.logs.warning("Se intento finalizar una carrera sin haber inicializado el taximetro")
             result_label.config(text="No hay carrera en curso", font=("Arial", 12, "bold"), justify="center")
         else:
+            self.logs.warning("Se intento finalizar una carrera sin primero haber detenido el coche")
             result_label.config(text="Para finalizar el recorrido, primero debes detener el coche", font=("Arial", 12, "bold"), justify="center")
+
+
+
+
+    def actualizarPrecio(self):
+        self.tarifaTotal += self.precioActual
+        result_label_info.config(text=f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"), justify="center")
+        self.actualizar_precio = window.after(1000, self.actualizarPrecio)
 
 
 
@@ -93,30 +109,8 @@ class Taximetro:
             self.actualizar_precio = None
 
 
-    def cambiarPreciosBD(self, precio_Det, precio_Mov):
-        if not self.taximetroActivo:
-            db = Data()
-            precio_det = precio_Det.get()
-            precio_mov = precio_Mov.get()
-            db.editarPrecios(precio_det, precio_mov)
-        else:
-            print("Para cambiar los precios debes de terminar la carrera")
-            
-            
 
-    def actualizarPrecio(self):
-        self.tarifaTotal += self.precioActual
-        result_label_info.config(text=f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"), justify="center")
-        self.actualizar_precio = window.after(1000, self.actualizarPrecio)
-
-        
-    def mostrarHistorial(self):
-        database = Database_historial()
-        historial = database.all()
-        return historial
-
-
-    def agregarABaseDeDatos(self):
+    def guardarRegistroTaximetro_BD(self):
         fecha_actual = datetime.now()
         database = Database_historial()
         fecha_hora_actual_str = fecha_actual.strftime('%Y-%m-%d %H:%M:%S')
@@ -125,7 +119,28 @@ class Taximetro:
             "fecha": str(fecha_hora_actual_str)
         }
         database.insertar(data)
+        self.logs.info("Se ha guardado los registro del taximetro en la base de datos")
 
+
+
+
+    def cambiarPreciosBD(self, precio_Det, precio_Mov):
+        if not self.taximetroActivo:
+            db = Data()
+            precio_det = precio_Det.get()
+            precio_mov = precio_Mov.get()
+            db.editarPrecios(precio_det, precio_mov)
+            self.logs.info("Se han cambiado los precios del taximetro")
+        else:
+            self.logs.warning("Se intento cambiar los precios del taximetro cuando habia una carrera en curso")
+            print("Para cambiar los precios debes de terminar la carrera")
+            
+            
+    def mostrarHistorial(self):
+        database = Database_historial()
+        historial = database.all()
+        self.logs.info("Se ha hecho una consulta del historial")
+        return historial
 
 
     def reiniciarValores(self):
@@ -140,7 +155,6 @@ class Taximetro:
         self.precio_det = 0
         self.precioActual=0
         self.actualizar_precio = None
-        print(self.tarifaTotal)
 
 
     def finalizarWindows(self):
@@ -162,13 +176,17 @@ class Taximetro:
 
 #TKINTER
 def iniciarCarrera():
-    contrasena_ingresada = entry_contrasena.get()
+
+    logs = Logs()
     usuario = Data()
+    contrasena_ingresada = entry_contrasena.get()
     contraseña_bbdd = usuario.password_get()
     contaseña_hash = usuario.password_hash(contrasena_ingresada)
-    logs()
+    
     if contaseña_hash == contraseña_bbdd:
-
+        # descargarHistorial_BTN.pack(padx=10, pady=10, side="left")
+        descargarHistorial_BTN.place(x=10, y=10)
+        descargarHistorial_BTN.configure(fg="white", bg="#00618E")
         label_contrasena.pack_forget()
         button_iniciar.pack_forget()
         entry_contrasena.pack_forget()
@@ -183,6 +201,7 @@ def iniciarCarrera():
     else:
         label_contrasena.config(text="Contraseña Incorrecta", font=("Arial", 12, "bold"), justify="center")
         label_contrasena.pack(pady=10, ipady=10, ipadx=100)
+        logs.warning("Han intentado ingresar al taximetro con una contraseña incorrecta")
 
 def moverCoche():
     taximetro.moverCoche()
@@ -194,6 +213,8 @@ def finalizarRecorrido():
     taximetro.finalizarRecorrido()
     
 def crearVentanaModificarPrecio():
+    logs = Logs()
+    logs.warning("Se ingreso a la ventana de moficicar los precios")
     taximetro = Taximetro()
     
     def cerrar_reiniciar():
@@ -202,7 +223,6 @@ def crearVentanaModificarPrecio():
         taximetro.iniciar()
         nueva_ventana.destroy()
         
-    
     nueva_ventana = tk.Toplevel(window)
     nueva_ventana.title("Ventana Nueva")
     nueva_ventana.geometry("400x300")
@@ -213,14 +233,14 @@ def crearVentanaModificarPrecio():
     label = tk.Label(frame, text="¡Modificar precios!")
     label.grid(row=0, column=0, padx=10, pady=10)
     
-    label = tk.Label(frame, text="¡Precio sin movimiento!")
-    label.grid(row=0, column=0, padx=10, pady=10)
+    label2 = tk.Label(frame, text="¡Precio sin movimiento!")
+    label2.grid(row=0, column=0, padx=10, pady=10)
     precio_sin_movimiento = tk.Entry(nueva_ventana)
     precio_sin_movimiento.pack(pady=10, ipady=10, ipadx=50)
         
         
-    label = tk.Label(frame, text="¡Precio con movimiento!")
-    label.grid(row=0, column=0, padx=10, pady=10)
+    label3 = tk.Label(frame, text="¡Precio con movimiento!")
+    label3.grid(row=0, column=0, padx=10, pady=10)
     precio_con_movimiento = tk.Entry(nueva_ventana)
     precio_con_movimiento.pack(pady=10, ipady=10, ipadx=50)
     
@@ -228,6 +248,11 @@ def crearVentanaModificarPrecio():
     modificarPrecio_BTN.pack()
     
     
+    
+    
+def descargarHistorial():
+    historial = Database_historial()
+    historial.all()
 
 
 taximetro = Taximetro()
@@ -237,6 +262,7 @@ window.title("Taxímetro")
 window.geometry("720x480")
 
 # create widgets
+descargarHistorial_BTN = tk.Button(window, text="DescargarHistorial", command=descargarHistorial)
 button_init = tk.Button(window, text="Iniciar Carrera", command=iniciarCarrera)
 button_mover = tk.Button(window, text="Mover Coche", command=moverCoche)
 button_detener = tk.Button(window, text="Detener Coche", command=detenerCoche)
@@ -266,9 +292,13 @@ label = tk.Label(window, image=imagen_tk)
 label.pack()
 
 
+
 # modificar
 
 modificarPrecio_BTN = tk.Button(window, text="Modificar precio", command=crearVentanaModificarPrecio)
+
+
+
 
 message_widget = tk.Message(window, text="\tBienvenido al Taxímetro:\n\nPara iniciar el taxi, presiona 'Iniciar '.\nPara mover el taxi, presiona 'Mover '.\nPara detener el taxi, presiona 'Detener '.\nPara finalizar el taxi, presiona 'Finalizar'.", width=400)
 message_widget.configure(

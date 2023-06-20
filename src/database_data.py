@@ -1,15 +1,24 @@
 import hashlib
 import mysql.connector
+from logs import Logs
 
 class Data:
     
-    conexion = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="",
-        database="taxi_database"
-        
-    )
+    
+    
+    def __init__(self):   
+        self.logs = Logs()
+        try:
+            self.conexion = mysql.connector.connect(
+                host="localhost",
+                user="root",
+                password="",
+                database="taxi_database"
+            )
+        except mysql.connector.Error as error:
+            self.logs.error("Error databa_data.py al conectar a la base de datos:", error)
+            print("Error al conectar a la base de datos:", error)
+           
     
     def precios(self):
         cursor = self.conexion.cursor()
