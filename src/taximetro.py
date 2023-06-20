@@ -39,7 +39,7 @@ class Taximetro:
                 self.tarifaTotal = 0
             result_label.config(text="Taximetro inicializado", font=("Arial", 12, "bold"), justify="center")
             self.taximetroActivo = True
-            self.tiempoInicio = time.time()
+            # self.tiempoInicio = time.time()
             self.actualizar_precio = window.after(1000, self.actualizarPrecio)
         else:
             result_label.config(text="El taximetro ya se ha iniciado", font=("Arial", 12, "bold"), justify="center")
@@ -49,7 +49,7 @@ class Taximetro:
         if self.taximetroActivo and not self.cocheEnMovimiento:
             self.precioActual = self.precio_mov
             self.cocheEnMovimiento = True
-            self.tiempoInicio = time.time()
+            # self.tiempoInicio = time.time()
             result_label.config(text="Coche en movimiento", font=("Arial", 12, "bold"), justify="center")
             result_label_info.config(text=f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"), justify="center")
         elif not self.taximetroActivo:
@@ -65,7 +65,7 @@ class Taximetro:
             self.cocheEnMovimiento = False
             self.yaSeAfrenado = True
             result_label.config(text="El Coche se ha detenido", font=("Arial", 12, "bold"), justify="center")
-            self.tiempoInicio = time.time()
+            # self.tiempoInicio = time.time()
         else:
             result_label.config(text="El coche ya está detenido", font=("Arial", 12, "bold"), justify="center")
 
