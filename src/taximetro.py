@@ -79,7 +79,7 @@ class Taximetro:
             self.agregarABaseDeDatos()
             result_label_info.config(text=f"Total a pagar: {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"), justify="center")
             self.reiniciarValores()
-            # modificarPrecio_BTN.pack(padx=10, pady=10, side="right")
+            modificarPrecio_BTN.pack(padx=10, pady=10, side="right")
         elif not self.taximetroActivo:
             result_label.config(text="No hay carrera en curso", font=("Arial", 12, "bold"), justify="center")
         else:
@@ -179,7 +179,7 @@ def iniciarCarrera():
         button_finalizar.pack(pady=10, ipady=10, ipadx=90)
         button_close.pack()
         taximetro.iniciar()
-        modificarPrecio_BTN.pack(padx=10, pady=10, side="right")
+        # modificarPrecio_BTN.pack(padx=10, pady=10, side="right")
     else:
         label_contrasena.config(text="Contraseña Incorrecta", font=("Arial", 12, "bold"), justify="center")
         label_contrasena.pack(pady=10, ipady=10, ipadx=100)
