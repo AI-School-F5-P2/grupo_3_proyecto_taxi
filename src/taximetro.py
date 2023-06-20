@@ -197,7 +197,6 @@ def iniciarCarrera():
     contaseña_hash = usuario.password_hash(contrasena_ingresada)
     
     if contaseña_hash == contraseña_bbdd:
-        # descargarHistorial_BTN.pack(padx=10, pady=10, side="left")
         descargarHistorial_BTN.place(x=10, y=10)
         descargarHistorial_BTN.configure(fg="white", bg="#00618E")
         label_contrasena.pack_forget()
