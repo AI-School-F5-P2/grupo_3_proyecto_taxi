@@ -8,6 +8,7 @@ from database_historial import Database_historial
 import os
 import threading
 from database_data import Data
+import tkinter.font as tkFont
 
 class Taximetro:
     def __init__(self):
@@ -32,7 +33,6 @@ class Taximetro:
         self.precio_det = precios[0]["precio_det"] if precios else 0.02
         self.precioActual = self.precio_det
 
-        result_label_info.config(text="")
         if not self.taximetroActivo:
             if self.tarifaTotal > 0:
                 self.tarifaTotal = 0
@@ -50,12 +50,12 @@ class Taximetro:
             self.cocheEnMovimiento = True
             self.tiempoInicio = time.time()
             result_label.config(text="Coche en movimiento", font=("Arial", 12, "bold"), justify="center")
-            result_label_info.config(text=f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"), justify="center")
+            result_label_info.config(text=f"{self.tarifaTotal:.2f} EUROS.", font=custom_font, justify="center", bg="black", fg="white",  borderwidth=2, relief="solid", padx=5, pady=5)
         elif not self.taximetroActivo:
             result_label.config(text="Antes de poner en movimiento el coche, debes inicializar el taximetro", font=("Arial", 12, "bold"), justify="center")
         else:
             result_label.config(text="El Coche ya está en movimiento", font=("Arial", 12, "bold"), justify="center")
-            result_label_info.config(text=f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"), justify="center")
+            result_label_info.config(text=f"{self.tarifaTotal:.2f} EUROS.", font=custom_font, justify="center", bg="black", fg="white",  borderwidth=2, relief="solid", padx=5, pady=5)
 
 
     def detenerCoche(self):
@@ -76,7 +76,7 @@ class Taximetro:
             result_label.config(text="Carrera terminada. Para iniciar otra carrera, haz clic en 'Iniciar Carrera'", font=("Arial", 12, "bold"), justify="center")
             self.detenerActualizacionPrecio()
             self.agregarABaseDeDatos()
-            result_label_info.config(text=f"Total a pagar: {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"), justify="center")
+            result_label_info.config(text=f"Total a pagar: {self.tarifaTotal:.2f} Euros.", font=("Arial", 30, "bold"), justify="center")
             self.reiniciarValores()
             modificarPrecio_BTN.pack(padx=10, pady=10, side="right")
         elif not self.taximetroActivo:
@@ -105,7 +105,7 @@ class Taximetro:
 
     def actualizarPrecio(self):
         self.tarifaTotal += self.precioActual
-        result_label_info.config(text=f"Se ha acumulado una tarifa de {self.tarifaTotal:.2f} Euros.", font=("Arial", 12, "bold"), justify="center")
+        result_label_info.config(text=f"{self.tarifaTotal:.2f} EUROS.", font=custom_font, justify="center", bg="black", fg="white",  borderwidth=2, relief="solid", padx=5, pady=5)
         self.actualizar_precio = window.after(1000, self.actualizarPrecio)
 
         
@@ -216,7 +216,7 @@ taximetro = Taximetro()
 
 window = tk.Tk()
 window.title("Taxímetro")
-window.geometry("720x480")
+window.geometry("710x510")
 
 # create widgets
 button_init = tk.Button(window, text="Iniciar Carrera", command=iniciarCarrera)
@@ -262,7 +262,11 @@ message_widget.pack(pady=10)
 result_label = tk.Label(window, text="")
 result_label.pack()
 
-result_label_info = tk.Label(window, text="")
+ruta_fuente = "taximeter.ttf"
+custom_font = tkFont.Font(family="taximeter", size=35)
+
+
+result_label_info = tk.Label(window, font=custom_font, fg="red")
 result_label_info.pack()
 
 result_label_count = tk.Label(window, text="")
