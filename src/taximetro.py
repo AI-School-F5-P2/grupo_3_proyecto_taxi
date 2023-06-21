@@ -108,14 +108,10 @@ class Taximetro:
         result_label_info.config(text=f"{self.tarifaTotal:.2f} EUROS.", font=custom_font, justify="center", bg="black", fg="white",  borderwidth=2, relief="solid", padx=5, pady=5)
         self.actualizar_precio = window.after(1000, self.actualizarPrecio)
 
-        
-
     def mostrarHistorial(self):
         database = Database_historial()
         historial = database.all()
         return historial
-
-
 
     def agregarABaseDeDatos(self):
         fecha_actual = datetime.now()
@@ -162,7 +158,7 @@ def iniciarCarrera():
         button_finalizar.pack(pady=10, ipady=10, ipadx=90)
         button_close.pack()
         taximetro.iniciar()
-        # modificarPrecio_BTN.pack(padx=10, pady=10, side="right")
+        modificarPrecio_BTN.pack_forget()
     else:
         label_contrasena.config(text="Contraseña Incorrecta", font=("Arial", 12, "bold"), justify="center")
         label_contrasena.pack(pady=10, ipady=10, ipadx=100)
@@ -183,31 +179,27 @@ def crearVentanaModificarPrecio():
         nueva_ventana.destroy()
     
     nueva_ventana = tk.Toplevel(window)
-    nueva_ventana.title("Ventana Nueva")
-    nueva_ventana.geometry("400x300")
+    nueva_ventana.title("Modificar Precios")
+    nueva_ventana.geometry("350x350")
 
     frame = tk.Frame(nueva_ventana)
     frame.pack()
 
-    label = tk.Label(frame, text="¡Modificar precios!")
-    label.grid(row=0, column=0, padx=10, pady=10)
     
-    label = tk.Label(frame, text="¡Precio sin movimiento!")
-    label.grid(row=0, column=0, padx=10, pady=10)
-    precio_sin_movimiento = tk.Entry(nueva_ventana)
-    sin_movimiento = precio_sin_movimiento.get()
-    precio_sin_movimiento.pack(pady=10, ipady=10, ipadx=50)
-        
-        
-    label = tk.Label(frame, text="¡Precio con movimiento!")
-    label.grid(row=0, column=0, padx=10, pady=10)
-    precio_con_movimiento = tk.Entry(nueva_ventana)
-    con_movimiento = precio_con_movimiento.get()
-    print(con_movimiento)
-    precio_con_movimiento.pack(pady=10, ipady=10, ipadx=50)
+    label_det = tk.Label(frame, text="Precio coche detenido", font=("Arial", 16), justify="left")
+    precio_sin_movimiento = tk.Entry(frame, justify="center", font=("Arial", 20))
+    precio_sin_movimiento.insert(0, 0.02)
+    label_mov = tk.Label(frame, text="Precio coche en movimiento", font=("Arial", 16), justify="left")
+    precio_con_movimiento = tk.Entry(frame, justify="center", font=("Arial", 20))
+    precio_con_movimiento.insert(0, 0.05)
+    modificarPrecio_BTN = tk.Button(frame, text="Modificar", command=lambda:( taximetro.cambiarPreciosBD(precio_sin_movimiento, precio_con_movimiento), cerrar_reiniciar()), font=("Arial", 10))
     
-    modificarPrecio_BTN = tk.Button(nueva_ventana, text="Modificar precio", command=lambda:( taximetro.cambiarPreciosBD(precio_sin_movimiento, precio_con_movimiento), cerrar_reiniciar()))
-    modificarPrecio_BTN.pack()
+    
+    label_det.pack(pady=2, ipady=10, ipadx=100)
+    precio_sin_movimiento.pack(pady=10, ipady=10, ipadx=10)
+    label_mov.pack(pady=2, ipady=10, ipadx=100)
+    precio_con_movimiento.pack(pady=10, ipady=10, ipadx=10)
+    modificarPrecio_BTN.pack(pady=2, ipady=10, ipadx=135)
     
     
 
@@ -273,5 +265,3 @@ result_label_count = tk.Label(window, text="")
 result_label_count.pack()
 
 window.mainloop()
-
-
