@@ -1,6 +1,7 @@
 import pytest
 from taximetro import Taximetro
 
+
 def test_inicializar_taximetro():
     taximetro = Taximetro()
     assert not taximetro.iniciar

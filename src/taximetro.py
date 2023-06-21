@@ -9,6 +9,7 @@ import os
 import threading
 from database_data import Data
 import tkinter.font as tkFont
+import keyboard
 
 class Taximetro:
     def __init__(self):
@@ -159,10 +160,7 @@ class Taximetro:
     def reiniciarValores(self):
         self.taximetroActivo = False
         self.cocheEnMovimiento = False
-        self.tiempoInicio = 0
-        self.tiempoTrancurrido = 0
         self.tarifaTotal = 0
-        self.tarifa = 0
         self.yaSeAfrenado = False
         self.precio_mov = 0
         self.precio_det = 0
@@ -216,18 +214,22 @@ def iniciarCarrera():
         logs.warning("Han intentado ingresar al taximetro con una contraseña incorrecta")
 
 def moverCoche():
-    taximetro.moverCoche()
+    if taximetro.taximetroActivo:
+        taximetro.moverCoche()
 
 def detenerCoche():
-    taximetro.detenerCoche()
+    if taximetro.taximetroActivo:
+        taximetro.detenerCoche()
 
 def finalizarRecorrido():
-    taximetro.finalizarRecorrido()
+    if taximetro.taximetroActivo:
+        taximetro.finalizarRecorrido()
     
 def crearVentanaModificarPrecio():
+    taximetro = Taximetro()
+    
     logs = Logs()
     logs.warning("Se ingreso a la ventana de moficicar los precios")
-    taximetro = Taximetro()
     
     def cerrar_reiniciar():
         taximetro.detenerActualizacionPrecio()
@@ -263,9 +265,10 @@ def crearVentanaModificarPrecio():
     
     
 def descargarHistorial():
-    historial = Database_historial()
-    historial.all()
-
+    print(taximetro.taximetroActivo)
+    if taximetro.taximetroActivo:
+        historial = Database_historial()
+        historial.all()
 
 taximetro = Taximetro()
 
@@ -332,6 +335,15 @@ result_label_info.pack()
 result_label_count = tk.Label(window, text="")
 result_label_count.pack()
 
+
+# acciones del teclado
+keyboard.add_hotkey('enter', iniciarCarrera)
+keyboard.add_hotkey('m', moverCoche)
+keyboard.add_hotkey('d', detenerCoche)
+keyboard.add_hotkey('f', finalizarRecorrido)
+keyboard.add_hotkey('h', descargarHistorial)
+
 window.mainloop()
+
 
 
