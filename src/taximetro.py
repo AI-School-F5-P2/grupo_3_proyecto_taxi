@@ -35,7 +35,6 @@ class Taximetro:
     def iniciar(self):
         self.aplicarPrecios()
         self.data = Data()
-        result_label_info.config(text="")
         if not self.taximetroActivo:
             self.logs.info("Se a iniciado el taximetro")
             if self.tarifaTotal > 0:
