@@ -5,6 +5,7 @@ import asyncio
 from logs import Logs
 import shutil
 import os
+from decouple import config
 
 class Database_historial:
     #CONEXION A BASE DE DATOS
@@ -12,10 +13,10 @@ class Database_historial:
         self.logs = Logs()
         try:
             self.conexion = mysql.connector.connect(
-                host="localhost",
-                user="root",
-                password="",
-                database="taxi_database"
+                host = config("MYSQL_HOST"),
+                user = config("MYSQL_USER"),
+                password = config("MYSQL_PASSWORD"),
+                database = config("MYSQL_DATABASE")
             )
         except mysql.connector.Error as error:
             self.logs.error("Error en Database_historial.py al conectar a la base de datos:", error)

@@ -1,6 +1,7 @@
 import hashlib
 import mysql.connector
 from logs import Logs
+from decouple import config
 
 class Data:
     
@@ -10,10 +11,10 @@ class Data:
         self.logs = Logs()
         try:
             self.conexion = mysql.connector.connect(
-                host="localhost",
-                user="root",
-                password="",
-                database="taxi_database"
+                host = config("MYSQL_HOST"),
+                user = config("MYSQL_USER"),
+                password = config("MYSQL_PASSWORD"),
+                database = config("MYSQL_DATABASE")
             )
         except mysql.connector.Error as error:
             self.logs.error("Error databa_data.py al conectar a la base de datos:", error)
