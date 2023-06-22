@@ -326,7 +326,8 @@ result_label = tk.Label(window, text="")
 result_label.pack()
 
 ruta_fuente = "taximeter.ttf"
-custom_font = tkFont.Font(family="taximeter", size=35)
+custom_font = tkFont.Font(family="taximeter", size=35 )
+
 
 
 result_label_info = tk.Label(window, font=custom_font, fg="red")

@@ -37,11 +37,12 @@ class Database_historial:
                 "fecha":element[2]
             }
             historial.append(data)
-        self.guardarEnTextoPlano(historial)
+        # self.guardarEnTextoPlano(historial)
         return historial
     
     # INSERTAR
     def insertar(self, data):
+        self.guardarEnTextoPlano(data)
         tarifa =  data["tarifa"]
         fecha =  data["fecha"]
         cursor = self.conexion.cursor()
@@ -54,7 +55,7 @@ class Database_historial:
    
     
      #guardar en un archivo .txt
-    def guardarEnTextoPlano(self,historial):
+    def guardarEnTextoPlano(self, historial):
         carpeta = "../historial"
         archivo = "historial.txt"
 
@@ -65,17 +66,25 @@ class Database_historial:
         # Ruta completa del archivo
         ruta_archivo = os.path.join(carpeta, archivo)
 
-        # Abrir archivo de texto para escritura
-        archivo_txt = open(ruta_archivo, "w")   
-                    
-        # db = Database()
-        # historial = db.all()
-        # archivo_txt = open("datos.txt", "w")
-        for data in historial:
-            texto = f"ID: {data['id']} TARIFA: {data['tarifa']} FECHA: {data['fecha']} \n"
-            archivo_txt.write(texto)
-        archivo_txt.close()
+        # Leer contenido existente (si hay)
+        contenido_existente = ""
+        if os.path.exists(ruta_archivo):
+            with open(ruta_archivo, "r") as archivo_txt:
+                print(archivo_txt.read())
+                contenido_existente = archivo_txt.read()
+
+        # Verificar si el nuevo dato ya existe en el contenido existente
+        texto_nuevo = f" TARIFA: {historial['tarifa']} FECHA: {historial['fecha']} \n"
+        if texto_nuevo not in contenido_existente:
+            # Abrir archivo de texto en modo de añadir (append) para agregar el nuevo dato al final
+            with open(ruta_archivo, "a") as archivo_txt:
+                archivo_txt.write(texto_nuevo)
+
         self.generarCopiaEnPC()
+
+
+        self.generarCopiaEnPC()
+
     
     
     
