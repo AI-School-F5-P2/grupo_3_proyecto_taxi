@@ -1,14 +1,14 @@
 from flask import Flask
 import time
 from datetime import datetime
+import asyncio
 import tkinter as tk
 from PIL import ImageTk, Image
 from logs import Logs
 from database_historial import Database_historial
-import os
-import threading
 from database_data import Data
 import tkinter.font as tkFont
+import keyboard
 
 class Taximetro:
     def __init__(self):
@@ -19,6 +19,7 @@ class Taximetro:
         self.precio_mov = 0
         self.precio_det = 0
         self.precioActual=0
+        self.a=0
         self.actualizar_precio = None
         self.logs = Logs()
        
@@ -73,9 +74,6 @@ class Taximetro:
         else:
             self.logs.warning("se intento detener el coche cuando ya estaba detenido")
             result_label.config(text="El coche ya está detenido", font=("Arial", 12, "bold"), justify="center")
-
-
-
 
     def finalizarRecorrido(self):
         if self.cocheEnMovimiento == False and self.taximetroActivo:
@@ -146,22 +144,28 @@ class Taximetro:
         result_label_info.config(text=f"{self.tarifaTotal:.2f} EUROS.", font=custom_font, justify="center", bg="black", fg="white",  borderwidth=2, relief="solid", padx=5, pady=5)
         self.actualizar_precio = window.after(1000, self.actualizarPrecio)
 
-        
-
     def mostrarHistorial(self):
         database = Database_historial()
         historial = database.all()
         self.logs.info("Se ha hecho una consulta del historial")
         return historial
 
+    def agregarABaseDeDatos(self):
+        fecha_actual = datetime.now()
+        database = Database_historial()
+        fecha_hora_actual_str = fecha_actual.strftime('%Y-%m-%d %H:%M:%S')
+        data = {
+            "tarifa": str(self.tarifaTotal),
+            "fecha": str(fecha_hora_actual_str)
+        }
+        database.insertar(data)
+
+
 
     def reiniciarValores(self):
         self.taximetroActivo = False
         self.cocheEnMovimiento = False
-        self.tiempoInicio = 0
-        self.tiempoTrancurrido = 0
         self.tarifaTotal = 0
-        self.tarifa = 0
         self.yaSeAfrenado = False
         self.precio_mov = 0
         self.precio_det = 0
@@ -171,20 +175,6 @@ class Taximetro:
 
     def finalizarWindows(self):
         window.destroy()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #TKINTER
 def iniciarCarrera():
@@ -196,9 +186,6 @@ def iniciarCarrera():
     contaseña_hash = usuario.password_hash(contrasena_ingresada)
     
     if contaseña_hash == contraseña_bbdd:
-        # descargarHistorial_BTN.pack(padx=10, pady=10, side="left")
-        descargarHistorial_BTN.place(x=10, y=10)
-        descargarHistorial_BTN.configure(fg="white", bg="#00618E")
         label_contrasena.pack_forget()
         button_iniciar.pack_forget()
         entry_contrasena.pack_forget()
@@ -209,64 +196,70 @@ def iniciarCarrera():
         button_finalizar.pack(pady=10, ipady=10, ipadx=90)
         button_close.pack()
         taximetro.iniciar()
-        # modificarPrecio_BTN.pack(padx=10, pady=10, side="right")
+        modificarPrecio_BTN.pack_forget()
     else:
         label_contrasena.config(text="Contraseña Incorrecta", font=("Arial", 12, "bold"), justify="center")
         label_contrasena.pack(pady=10, ipady=10, ipadx=100)
         logs.warning("Han intentado ingresar al taximetro con una contraseña incorrecta")
 
 def moverCoche():
-    taximetro.moverCoche()
+    if taximetro.taximetroActivo:
+        taximetro.moverCoche()
 
 def detenerCoche():
-    taximetro.detenerCoche()
+    if taximetro.taximetroActivo:
+        taximetro.detenerCoche()
 
 def finalizarRecorrido():
     taximetro.finalizarRecorrido()
-    
+
+# funcion para la segunda ventana ---------------------------------------------------------------------------------------------
+
 def crearVentanaModificarPrecio():
-    logs = Logs()
-    logs.warning("Se ingreso a la ventana de moficicar los precios")
     taximetro = Taximetro()
     
     def cerrar_reiniciar():
-        taximetro.detenerActualizacionPrecio()
-        taximetro.reiniciarValores()
-        taximetro.iniciar()
-        nueva_ventana.destroy()
-        
+        label_det.pack_forget()
+        label_mov.pack_forget()
+        modificarPrecio_BTN.pack_forget()
+        img_check = Image.open("../assets/check.png")
+        resize_img = img_check.resize((100, 100))
+        image_tk = ImageTk.PhotoImage(resize_img)
+        label = tk.Label(frame, image=image_tk)
+        label.image = image_tk  # Almacena una referencia a la imagen para evitar que se elimine de la memoria
+        label.pack()
+       
+        nueva_ventana.after(2000, nueva_ventana.destroy)
+
+
+
     nueva_ventana = tk.Toplevel(window)
-    nueva_ventana.title("Ventana Nueva")
-    nueva_ventana.geometry("400x300")
+    nueva_ventana.title("Modificar Precios")
+    nueva_ventana.geometry("350x350")
 
     frame = tk.Frame(nueva_ventana)
     frame.pack()
 
-    label = tk.Label(frame, text="¡Modificar precios!")
-    label.grid(row=0, column=0, padx=10, pady=10)
     
-    label2 = tk.Label(frame, text="¡Precio sin movimiento!")
-    label2.grid(row=0, column=0, padx=10, pady=10)
-    precio_sin_movimiento = tk.Entry(nueva_ventana)
-    precio_sin_movimiento.pack(pady=10, ipady=10, ipadx=50)
-        
-        
-    label3 = tk.Label(frame, text="¡Precio con movimiento!")
-    label3.grid(row=0, column=0, padx=10, pady=10)
-    precio_con_movimiento = tk.Entry(nueva_ventana)
-    precio_con_movimiento.pack(pady=10, ipady=10, ipadx=50)
-    
-    modificarPrecio_BTN = tk.Button(nueva_ventana, text="Modificar precio", command=lambda:( taximetro.cambiarPreciosBD(precio_sin_movimiento, precio_con_movimiento), cerrar_reiniciar()))
-    modificarPrecio_BTN.pack()
+    label_det = tk.Label(frame, text="Precio coche detenido", font=("Arial", 16), justify="left")
+    precio_sin_movimiento = tk.Entry(frame, justify="center", font=("Arial", 20))
+    precio_sin_movimiento.insert(0, 0.02)
+    label_mov = tk.Label(frame, text="Precio coche en movimiento", font=("Arial", 16), justify="left")
+    precio_con_movimiento = tk.Entry(frame, justify="center", font=("Arial", 20))
+    precio_con_movimiento.insert(0, 0.05)
+    modificarPrecio_BTN = tk.Button(frame, text="Modificar", command=lambda:( taximetro.cambiarPreciosBD(precio_sin_movimiento, precio_con_movimiento), cerrar_reiniciar()), font=("Arial", 10))
     
     
+    label_det.pack(pady=2, ipady=10, ipadx=100)
+    precio_sin_movimiento.pack(pady=10, ipady=10, ipadx=10)
+    label_mov.pack(pady=2, ipady=10, ipadx=100)
+    precio_con_movimiento.pack(pady=10, ipady=10, ipadx=10)
+    modificarPrecio_BTN.pack(pady=2, ipady=10, ipadx=135)
     
-    
-def descargarHistorial():
-    historial = Database_historial()
-    historial.all()
+# termina funcion para la segunda ventana------------------------------------------------------------------------------------------------------------------------------
 
 
+# tkinter window
 taximetro = Taximetro()
 
 window = tk.Tk()
@@ -274,7 +267,6 @@ window.title("Taxímetro")
 window.geometry("710x510")
 
 # create widgets
-descargarHistorial_BTN = tk.Button(window, text="DescargarHistorial", command=descargarHistorial)
 button_init = tk.Button(window, text="Iniciar Carrera", command=iniciarCarrera)
 button_mover = tk.Button(window, text="Mover Coche", command=moverCoche)
 button_detener = tk.Button(window, text="Detener Coche", command=detenerCoche)
@@ -323,7 +315,8 @@ result_label = tk.Label(window, text="")
 result_label.pack()
 
 ruta_fuente = "taximeter.ttf"
-custom_font = tkFont.Font(family="taximeter", size=35)
+custom_font = tkFont.Font(family="taximeter", size=35 )
+
 
 
 result_label_info = tk.Label(window, font=custom_font, fg="red")
@@ -333,5 +326,14 @@ result_label_count = tk.Label(window, text="")
 result_label_count.pack()
 
 window.mainloop()
+
+# acciones del teclado
+keyboard.add_hotkey('enter', iniciarCarrera)
+keyboard.add_hotkey('m', moverCoche)
+keyboard.add_hotkey('d', detenerCoche)
+keyboard.add_hotkey('f', finalizarRecorrido)
+
+window.mainloop()
+
 
 
