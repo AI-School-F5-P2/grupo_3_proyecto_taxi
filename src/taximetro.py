@@ -1,12 +1,11 @@
 from flask import Flask
 import time
 from datetime import datetime
+import asyncio
 import tkinter as tk
 from PIL import ImageTk, Image
 from logs import logs
 from database_historial import Database_historial
-import os
-import threading
 from database_data import Data
 import tkinter.font as tkFont
 
@@ -23,8 +22,6 @@ class Taximetro:
         self.precio_det = 0
         self.precioActual=0
         self.a=0
-
-
 
     def iniciar(self):
         data = Data()
@@ -68,9 +65,6 @@ class Taximetro:
         else:
             result_label.config(text="El coche ya está detenido", font=("Arial", 12, "bold"), justify="center")
 
-
-
-
     def finalizarRecorrido(self):
         if self.cocheEnMovimiento == False and self.taximetroActivo:
             result_label.config(text="Carrera terminada. Para iniciar otra carrera, haz clic en 'Iniciar Carrera'", font=("Arial", 12, "bold"), justify="center")
@@ -83,8 +77,6 @@ class Taximetro:
             result_label.config(text="No hay carrera en curso", font=("Arial", 12, "bold"), justify="center")
         else:
             result_label.config(text="Para finalizar el recorrido, primero debes detener el coche", font=("Arial", 12, "bold"), justify="center")
-
-
 
 
     def cambiarPreciosBD(self, precio_Det, precio_Mov):
@@ -171,13 +163,27 @@ def detenerCoche():
 
 def finalizarRecorrido():
     taximetro.finalizarRecorrido()
-    
+
+# funcion para la segunda ventana ---------------------------------------------------------------------------------------------
+
 def crearVentanaModificarPrecio():
     taximetro = Taximetro()
     
     def cerrar_reiniciar():
-        nueva_ventana.destroy()
-    
+        label_det.pack_forget()
+        label_mov.pack_forget()
+        modificarPrecio_BTN.pack_forget()
+        img_check = Image.open("../assets/check.png")
+        resize_img = img_check.resize((100, 100))
+        image_tk = ImageTk.PhotoImage(resize_img)
+        label = tk.Label(frame, image=image_tk)
+        label.image = image_tk  # Almacena una referencia a la imagen para evitar que se elimine de la memoria
+        label.pack()
+       
+        nueva_ventana.after(2000, nueva_ventana.destroy)
+
+
+
     nueva_ventana = tk.Toplevel(window)
     nueva_ventana.title("Modificar Precios")
     nueva_ventana.geometry("350x350")
@@ -201,9 +207,10 @@ def crearVentanaModificarPrecio():
     precio_con_movimiento.pack(pady=10, ipady=10, ipadx=10)
     modificarPrecio_BTN.pack(pady=2, ipady=10, ipadx=135)
     
-    
+# termina funcion para la segunda ventana------------------------------------------------------------------------------------------------------------------------------
 
 
+# tkinter window
 taximetro = Taximetro()
 
 window = tk.Tk()
