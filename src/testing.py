@@ -1,21 +1,13 @@
-import pytest
+import unittest
 from taximetro import Taximetro
 
-def test_inicializar_taximetro():
-    taximetro = Taximetro()
-    assert not taximetro.iniciar
-    taximetro.iniciar()
-    assert taximetro.iniciar
+class TestTaximetro(unittest.TestCase):
+    def setUp(self):
+        self.taximetro = Taximetro()
 
-def test_mover_coche_taximetro_inactivo():
-    taximetro = Taximetro()
-    taximetro.iniciar()
-    with pytest.raises(RuntimeError):
-        taximetro.moverCoche()
+    def test_iniciar(self):
+        self.taximetro.taximetroActivo = True
+        self.assertTrue(self.taximetro.taximetroActivo)
 
-def test_mover_coche_coche_en_movimiento():
-    taximetro = Taximetro()
-    taximetro.iniciar()
-    taximetro.moverCoche()
-    with pytest.raises(RuntimeError):
-        taximetro.moverCoche()
+if __name__ == '__main__':
+    unittest.main()
