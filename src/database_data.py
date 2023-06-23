@@ -5,8 +5,6 @@ from decouple import config
 
 class Data:
     
-    
-    
     def __init__(self):   
         self.logs = Logs()
         try:
