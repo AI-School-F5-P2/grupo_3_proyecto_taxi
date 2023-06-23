@@ -35,16 +35,16 @@ def check_value(value):
     value_ko = "KO"
     for char in value_testing:
         print(color_yellow + char + color_reset, end='', flush=True)
-        time.sleep(0.05)
+        time.sleep(0.02)
         
     if value is True:
         for char in value_ok:
             print(color_green + char + color_reset, end='', flush=True)
-            time.sleep(0.05)
+            time.sleep(0.02)
     else:
         for char in value_ko:
             print(color_green + char + color_reset, end='', flush=True)
-            time.sleep(0.05)
+            time.sleep(0.02)
     print()
 
 # clase a ejectuar tipo testing

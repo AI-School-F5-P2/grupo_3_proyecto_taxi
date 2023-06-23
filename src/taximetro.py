@@ -30,16 +30,19 @@ class Taximetro:
         
 
     def iniciar(self):
-        self.aplicarPrecios()
-        self.data = Data()
-        if not self.taximetroActivo:
-            self.logs.info("Se a iniciado el taximetro")
-            if self.tarifaTotal > 0:
-                self.tarifaTotal = 0
-            self.taximetroActivo = True
-            self.actualizar_precio = window.after(1000, self.actualizarPrecio)
-        else:
-            self.logs.warning("Se intento de iniciar el taxímetro cuando ya está activo")
+        try:
+            self.aplicarPrecios()
+            self.data = Data()
+            if not self.taximetroActivo:
+                self.logs.info("Se a iniciado el taximetro")
+                if self.tarifaTotal > 0:
+                    self.tarifaTotal = 0
+                self.taximetroActivo = True
+                self.actualizar_precio = window.after(1000, self.actualizarPrecio)
+            else:
+                self.logs.warning("Se intento de iniciar el taxímetro cuando ya está activo")
+        except Exception as e:
+            self.logs.error("Error al iniciar el taximetro", e)
 
 
     def moverCoche(self):
@@ -157,33 +160,37 @@ class Taximetro:
 
 
 def iniciarCarrera():
-
-    logs = Logs()
-    usuario = Data()
-    contrasena_ingresada = entry_contrasena.get()
-    contraseña_bbdd = usuario.password_get()
-    contaseña_hash = usuario.password_hash(contrasena_ingresada)
+    try:
+        logs = Logs()
+        usuario = Data()
+        contrasena_ingresada = entry_contrasena.get()
+        contraseña_bbdd = usuario.password_get()
+        contaseña_hash = usuario.password_hash(contrasena_ingresada)
     
-    if contaseña_hash == contraseña_bbdd:
-        label_contrasena.pack_forget()
-        button_iniciar.pack_forget()
-        entry_contrasena.pack_forget()
-        message_widget.pack_forget()
-        button_init.pack(pady=10, ipady=10, ipadx=100)
-        button_mover.pack(pady=10, ipady=10, ipadx=100)
-        button_detener.pack(pady=10, ipady=10, ipadx=100)
-        button_finalizar.pack(pady=10, ipady=10, ipadx=90)
-        button_close.pack()
-        if not taximetro.taximetroActivo:
-            result_label.config(text="Taximetro inicializado", font=("Arial", 12, "bold"), justify="center")
+        if contaseña_hash == contraseña_bbdd:
+            label_contrasena.pack_forget()
+            button_iniciar.pack_forget()
+            entry_contrasena.pack_forget()
+            message_widget.pack_forget()
+            button_init.pack(pady=10, ipady=10, ipadx=100)
+            button_mover.pack(pady=10, ipady=10, ipadx=100)
+            button_detener.pack(pady=10, ipady=10, ipadx=100)
+            button_finalizar.pack(pady=10, ipady=10, ipadx=90)
+            button_close.pack()
+            if not taximetro.taximetroActivo:
+                result_label.config(text="Taximetro inicializado", font=("Arial", 12, "bold"), justify="center")
+            else:
+                result_label.config(text="El taximetro ya se ha iniciado", font=("Arial", 12, "bold"), justify="center")
+            taximetro.iniciar()
+            modificarPrecio_BTN.pack_forget()
         else:
-            result_label.config(text="El taximetro ya se ha iniciado", font=("Arial", 12, "bold"), justify="center")
-        taximetro.iniciar()
-        modificarPrecio_BTN.pack_forget()
-    else:
-        label_contrasena.config(text="Contraseña Incorrecta", font=("Arial", 12, "bold"), justify="center")
-        label_contrasena.pack(pady=10, ipady=10, ipadx=100)
-        logs.warning("Han intentado ingresar al taximetro con una contraseña incorrecta")
+            label_contrasena.config(text="Contraseña Incorrecta", font=("Arial", 12, "bold"), justify="center")
+            label_contrasena.pack(pady=10, ipady=10, ipadx=100)
+            logs.warning("Han intentado ingresar al taximetro con una contraseña incorrecta")
+    except Exception as e:
+        logs.error(f"Ha ocurrido un error al iniciar el taximetro: {e}")
+        print(f"Ha ocurrido un error al iniciar el taximetro: {e}")
+
 
 
 def moverCoche():
