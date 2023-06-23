@@ -11,6 +11,7 @@ import keyboard
 
 
 
+
 class Taximetro:
     def __init__(self):
         self.taximetroActivo = False
