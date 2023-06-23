@@ -71,7 +71,7 @@ class Database_historial:
         contenido_existente = ""
         if os.path.exists(ruta_archivo):
             with open(ruta_archivo, "r") as archivo_txt:
-                print(archivo_txt.read())
+                # print(archivo_txt.read())
                 contenido_existente = archivo_txt.read()
 
         # Verificar si el nuevo dato ya existe en el contenido existente
