@@ -2,10 +2,14 @@ from datetime import datetime
 import tkinter as tk
 from PIL import ImageTk, Image
 from logs import Logs
-from database_historial import Database_historial
-from database_data import Data
+from database.database_historial import Database_historial
+from database.database_data import Data
 import tkinter.font as tkFont
 import keyboard
+
+
+
+
 
 class Taximetro:
     def __init__(self):
@@ -158,7 +162,7 @@ class Taximetro:
     def finalizarWindows(self):
         window.destroy()
 
-
+#TKINTER
 def iniciarCarrera():
     try:
         logs = Logs()
@@ -328,8 +332,6 @@ result_label_info.pack()
 result_label_count = tk.Label(window, text="")
 result_label_count.pack()
 
-window.mainloop()
-
 # acciones del teclado
 keyboard.add_hotkey('enter', iniciarCarrera)
 keyboard.add_hotkey('m', moverCoche)
@@ -337,3 +339,5 @@ keyboard.add_hotkey('d', detenerCoche)
 keyboard.add_hotkey('f', finalizarRecorrido)
 
 window.mainloop()
+
+

@@ -83,9 +83,6 @@ class Database_historial:
 
         self.generarCopiaEnPC()
 
-
-        self.generarCopiaEnPC()
-
     
     
     
