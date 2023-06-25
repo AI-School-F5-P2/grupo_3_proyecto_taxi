@@ -306,6 +306,7 @@ imagen = Image.open("../assets/taxi.png")
 imagen_tk = ImageTk.PhotoImage(imagen)
 label = tk.Label(window, image=imagen_tk)
 label.pack()
+
 modificarPrecio_BTN = tk.Button(window, text="Modificar precio", command=crearVentanaModificarPrecio)
 message_widget = tk.Message(window, text="\tBienvenido al Taxímetro:\n\nPara iniciar el taxi, presiona 'Iniciar '.\nPara mover el taxi, presiona 'Mover '.\nPara detener el taxi, presiona 'Detener '.\nPara finalizar el taxi, presiona 'Finalizar'.", width=400)
 message_widget.configure(
