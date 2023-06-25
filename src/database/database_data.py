@@ -5,8 +5,6 @@ from decouple import config
 
 class Data:
     
-    
-    
     def __init__(self):   
         self.logs = Logs()
         try:
@@ -75,16 +73,3 @@ class Data:
   
   
   
-  
-  
-  
-##cambiar clave
-# usuario = Data()
-# nueva_clave = "1234"
-# usuario.password_insert(nueva_clave)
-
-##cambiar precios
-# usuario = Data()
-# precio_det = 0.02
-# precio_mov = 0.05
-# usuario.editarPrecios(precio_det, precio_mov)
